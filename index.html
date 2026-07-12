@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ديجي ميكسر — DJ Mixer</title>
+<style>
+  :root{
+    --bg:#101014;
+    --panel:#1a1a21;
+    --panel2:#22222b;
+    --line:#2e2e3a;
+    --text:#f0eee9;
+    --muted:#8b8b99;
+    --a:#ffb347;      /* Deck A amber */
+    --a-dim:#4a3319;
+    --b:#4fd8c3;      /* Deck B teal */
+    --b-dim:#123832;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif;
+    min-height:100vh;
+    padding:24px 16px 40px;
+  }
+  header{text-align:center;margin-bottom:22px}
+  header h1{font-size:22px;font-weight:700;letter-spacing:.5px}
+  header p{color:var(--muted);font-size:13px;margin-top:4px}
+
+  .board{
+    direction:ltr; /* fixed physical layout: A left, mixer center, B right */
+    display:grid;
+    grid-template-columns:1fr 220px 1fr;
+    gap:16px;
+    max-width:1180px;
+    margin:0 auto;
+    align-items:stretch;
+  }
+  .deck,.mixer{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:16px;
+    direction:rtl;
+  }
+  .deck{display:flex;flex-direction:column;gap:12px}
+  .deck.a{border-top:3px solid var(--a)}
+  .deck.b{border-top:3px solid var(--b)}
+
+  .deck-head{display:flex;align-items:center;justify-content:space-between}
+  .deck-tag{
+    font-weight:700;font-size:13px;padding:3px 12px;border-radius:99px;
+  }
+  .a .deck-tag{background:var(--a-dim);color:var(--a)}
+  .b .deck-tag{background:var(--b-dim);color:var(--b)}
+  .live{
+    font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px;
+  }
+  .live .dot{width:8px;height:8px;border-radius:50%;background:#3a3a46;transition:.2s}
+  .a .live.on .dot{background:var(--a);box-shadow:0 0 8px var(--a)}
+  .b .live.on .dot{background:var(--b);box-shadow:0 0 8px var(--b)}
+
+  .loadrow{display:flex;gap:8px}
+  .loadrow input{
+    flex:1;background:var(--panel2);border:1px solid var(--line);
+    border-radius:10px;padding:10px 12px;color:var(--text);font-size:13px;
+    direction:ltr;text-align:left;min-width:0;
+  }
+  .loadrow input::placeholder{color:var(--muted);direction:rtl;text-align:right}
+  .loadrow button{
+    background:var(--panel2);border:1px solid var(--line);color:var(--text);
+    border-radius:10px;padding:0 16px;font-size:13px;cursor:pointer;
+    font-family:inherit;white-space:nowrap;
+  }
+  .a .loadrow button:hover{border-color:var(--a);color:var(--a)}
+  .b .loadrow button:hover{border-color:var(--b);color:var(--b)}
+
+  .video-wrap{
+    position:relative;width:100%;aspect-ratio:16/9;background:#000;
+    border-radius:10px;overflow:hidden;border:1px solid var(--line);
+  }
+  .video-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .video-empty{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    color:var(--muted);font-size:13px;text-align:center;padding:12px;
+  }
+
+  .track-title{font-size:14px;font-weight:600;min-height:20px;line-height:1.4}
+  .track-artist{font-size:12px;color:var(--muted);min-height:16px}
+
+  .progress{
+    height:10px;background:var(--panel2);border-radius:99px;cursor:pointer;
+    position:relative;overflow:hidden;border:1px solid var(--line);
+  }
+  .progress .fill{height:100%;width:0%;border-radius:99px;transition:width .2s linear}
+  .a .progress .fill{background:var(--a)}
+  .b .progress .fill{background:var(--b)}
+  .times{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);direction:ltr}
+
+  .controls{display:flex;gap:8px}
+  .controls button{
+    flex:1;padding:12px 0;border-radius:10px;border:1px solid var(--line);
+    background:var(--panel2);color:var(--text);font-size:14px;cursor:pointer;
+    font-family:inherit;font-weight:600;transition:.15s;
+  }
+  .a .controls .play.on{background:var(--a);color:#1a1206;border-color:var(--a)}
+  .b .controls .play.on{background:var(--b);color:#062019;border-color:var(--b)}
+  .controls button:active{transform:scale(.97)}
+
+  .volrow{display:flex;align-items:center;gap:10px}
+  .volrow .lbl{font-size:12px;color:var(--muted);width:52px}
+  .volrow .val{font-size:12px;color:var(--muted);width:38px;text-align:left;direction:ltr}
+  input[type=range]{
+    -webkit-appearance:none;appearance:none;flex:1;height:6px;border-radius:99px;
+    background:var(--panel2);outline:none;cursor:pointer;direction:ltr;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:20px;height:20px;border-radius:50%;
+    background:var(--text);border:3px solid var(--bg);cursor:pointer;
+  }
+  .a input.vol::-webkit-slider-thumb{background:var(--a)}
+  .b input.vol::-webkit-slider-thumb{background:var(--b)}
+
+  /* Mixer */
+  .mixer{display:flex;flex-direction:column;justify-content:center;gap:18px;text-align:center}
+  .mixer h2{font-size:14px;color:var(--muted);font-weight:600;letter-spacing:1px}
+  .xf-labels{display:flex;justify-content:space-between;font-size:12px;font-weight:700;direction:ltr}
+  .xf-labels .la{color:var(--a)}
+  .xf-labels .lb{color:var(--b)}
+  .xfader{
+    -webkit-appearance:none;width:100%;height:14px;border-radius:99px;
+    background:linear-gradient(90deg,var(--a-dim),var(--panel2),var(--b-dim));
+    border:1px solid var(--line);
+  }
+  .xfader::-webkit-slider-thumb{
+    -webkit-appearance:none;width:26px;height:34px;border-radius:8px;
+    background:var(--text);border:2px solid var(--bg);cursor:grab;
+  }
+  .mix-hint{font-size:11px;color:var(--muted);line-height:1.7}
+  .center-btn{
+    background:var(--panel2);border:1px solid var(--line);color:var(--text);
+    border-radius:10px;padding:9px;font-size:12px;cursor:pointer;font-family:inherit;
+  }
+  .center-btn:hover{border-color:var(--muted)}
+  .mix-balance{display:flex;flex-direction:column;gap:6px}
+  .bal-bar{display:flex;height:8px;border-radius:99px;overflow:hidden;border:1px solid var(--line);direction:ltr}
+  .bal-bar .ba{background:var(--a);width:50%;transition:width .1s}
+  .bal-bar .bb{background:var(--b);flex:1;transition:.1s}
+  .bal-nums{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);direction:ltr}
+
+  .note{
+    max-width:1180px;margin:16px auto 0;background:var(--panel);
+    border:1px solid var(--line);border-radius:12px;padding:12px 16px;
+    font-size:12px;color:var(--muted);line-height:1.9;
+  }
+  .note b{color:var(--text)}
+
+  @media(max-width:900px){
+    .board{grid-template-columns:1fr}
+    .mixer{order:3}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🎧 ديجي ميكسر</h1>
+  <p>الصقي رابط يوتيوب أو يوتيوب ميوزك في كل ديك، وامزجي بينهم بالكروس فيدر</p>
+</header>
+
+<div class="board">
+
+  <!-- DECK A -->
+  <section class="deck a" id="deckA">
+    <div class="deck-head">
+      <span class="deck-tag">الديك A</span>
+      <span class="live" id="liveA"><span class="dot"></span><span>يشتغل الآن</span></span>
+    </div>
+    <div class="loadrow">
+      <input type="text" id="urlA" placeholder="الصقي رابط اليوتيوب هنا...">
+      <button onclick="loadDeck('A')">تحميل</button>
+    </div>
+    <div class="video-wrap" id="wrapA">
+      <div class="video-empty">ما فيه أغنية بعد — الصقي رابط فوق واضغطي «تحميل»</div>
+    </div>
+    <div>
+      <div class="track-title" id="titleA"></div>
+      <div class="track-artist" id="artistA"></div>
+    </div>
+    <div class="progress" onclick="seekDeck('A',event)"><div class="fill" id="fillA"></div></div>
+    <div class="times"><span id="curA">0:00</span><span id="durA">0:00</span></div>
+    <div class="controls">
+      <button class="play" id="playA" onclick="togglePlay('A')">▶ تشغيل</button>
+      <button onclick="restartDeck('A')">⏮ من البداية</button>
+    </div>
+    <div class="volrow">
+      <span class="lbl">الفوليوم</span>
+      <input type="range" class="vol" id="volA" min="0" max="100" value="90" oninput="applyVolumes()">
+      <span class="val" id="volValA">90%</span>
+    </div>
+  </section>
+
+  <!-- MIXER -->
+  <section class="mixer">
+    <h2>الكروس فيدر</h2>
+    <div class="xf-labels"><span class="la">A</span><span class="lb">B</span></div>
+    <input type="range" class="xfader" id="xfader" min="0" max="100" value="50" oninput="applyVolumes()">
+    <div class="mix-balance">
+      <div class="bal-bar"><div class="ba" id="balA"></div><div class="bb" id="balB"></div></div>
+      <div class="bal-nums"><span id="pctA">50%</span><span id="pctB">50%</span></div>
+    </div>
+    <button class="center-btn" onclick="centerXfader()">رجّعيه للنص</button>
+    <p class="mix-hint">اسحبيه يسار = تسمعين A بس<br>يمين = تسمعين B بس<br>بالنص = الثنتين مع بعض</p>
+  </section>
+
+  <!-- DECK B -->
+  <section class="deck b" id="deckB">
+    <div class="deck-head">
+      <span class="deck-tag">الديك B</span>
+      <span class="live" id="liveB"><span class="dot"></span><span>يشتغل الآن</span></span>
+    </div>
+    <div class="loadrow">
+      <input type="text" id="urlB" placeholder="الصقي رابط اليوتيوب هنا...">
+      <button onclick="loadDeck('B')">تحميل</button>
+    </div>
+    <div class="video-wrap" id="wrapB">
+      <div class="video-empty">ما فيه أغنية بعد — الصقي رابط فوق واضغطي «تحميل»</div>
+    </div>
+    <div>
+      <div class="track-title" id="titleB"></div>
+      <div class="track-artist" id="artistB"></div>
+    </div>
+    <div class="progress" onclick="seekDeck('B',event)"><div class="fill" id="fillB"></div></div>
+    <div class="times"><span id="curB">0:00</span><span id="durB">0:00</span></div>
+    <div class="controls">
+      <button class="play" id="playB" onclick="togglePlay('B')">▶ تشغيل</button>
+      <button onclick="restartDeck('B')">⏮ من البداية</button>
+    </div>
+    <div class="volrow">
+      <span class="lbl">الفوليوم</span>
+      <input type="range" class="vol" id="volB" min="0" max="100" value="90" oninput="applyVolumes()">
+      <span class="val" id="volValB">90%</span>
+    </div>
+  </section>
+
+</div>
+
+<p class="note">
+  <b>ملاحظات سريعة:</b>
+  بعض الأغاني أصحابها مانعين تشغيلها خارج يوتيوب — لو أغنية ما اشتغلت، جرّبي نسخة ثانية منها (مثلاً Audio أو Lyrics بدل الكليب الرسمي).
+  وأول ضغطة «تشغيل» لازم تكون منك (المتصفح يمنع التشغيل التلقائي).
+  الطريقة الكلاسيكية للترانزيشن: شغّلي B وهي على أقل فوليوم أو الكروس على A، وبعدين اسحبي الكروس فيدر بهدوء من A إلى B.
+</p>
+
+<script>
+const decks = {
+  A: {iframe:null, ready:false, playing:false, duration:0, current:0, listenTimer:null},
+  B: {iframe:null, ready:false, playing:false, duration:0, current:0, listenTimer:null}
+};
+
+function extractId(url){
+  url = (url||'').trim();
+  const m = url.match(/(?:youtube\.com\/(?:watch\?.*v=|embed\/|shorts\/)|youtu\.be\/|music\.youtube\.com\/watch\?.*v=)([A-Za-z0-9_-]{11})/);
+  if(m) return m[1];
+  if(/^[A-Za-z0-9_-]{11}$/.test(url)) return url;
+  return null;
+}
+
+function loadDeck(d){
+  const url = document.getElementById('url'+d).value;
+  const id = extractId(url);
+  if(!id){ alert('الرابط مو واضح 🙈 تأكدي إنه رابط يوتيوب صحيح'); return; }
+
+  const st = decks[d];
+  st.ready=false; st.playing=false; st.duration=0; st.current=0;
+  setPlayUI(d,false);
+  document.getElementById('title'+d).textContent = 'جاري التحميل...';
+  document.getElementById('artist'+d).textContent = '';
+
+  const wrap = document.getElementById('wrap'+d);
+  wrap.innerHTML = '';
+  const f = document.createElement('iframe');
+  f.allow = 'autoplay; encrypted-media';
+  f.src = 'https://www.youtube.com/embed/'+id+'?enablejsapi=1&playsinline=1&controls=0&rel=0&modestbranding=1';
+  wrap.appendChild(f);
+  st.iframe = f;
+
+  if(st.listenTimer) clearInterval(st.listenTimer);
+  f.addEventListener('load', ()=>{
+    st.listenTimer = setInterval(()=>{
+      post(d, {event:'listening', id:d, channel:'widget'});
+    }, 400);
+  });
+}
+
+function post(d, obj){
+  const st = decks[d];
+  if(st.iframe && st.iframe.contentWindow){
+    st.iframe.contentWindow.postMessage(JSON.stringify(obj), '*');
+  }
+}
+function cmd(d, func, args){
+  post(d, {event:'command', func:func, args:args||[], id:d, channel:'widget'});
+}
+
+window.addEventListener('message', (e)=>{
+  if(typeof e.data !== 'string') return;
+  let data; try{ data = JSON.parse(e.data); }catch(_){ return; }
+  let d = null;
+  if(decks.A.iframe && e.source === decks.A.iframe.contentWindow) d='A';
+  else if(decks.B.iframe && e.source === decks.B.iframe.contentWindow) d='B';
+  if(!d) return;
+
+  const st = decks[d];
+
+  if(!st.ready && (data.event==='infoDelivery' || data.event==='initialDelivery' || data.event==='onReady')){
+    st.ready = true;
+    applyVolumes();
+  }
+
+  const info = data.info;
+  if(info){
+    if(typeof info.duration === 'number' && info.duration>0) st.duration = info.duration;
+    if(typeof info.currentTime === 'number') st.current = info.currentTime;
+    if(typeof info.playerState === 'number'){
+      st.playing = (info.playerState === 1);
+      setPlayUI(d, st.playing);
+      if(info.playerState === 0){ st.playing=false; setPlayUI(d,false); }
+    }
+    if(info.videoData && info.videoData.title){
+      document.getElementById('title'+d).textContent = info.videoData.title;
+      document.getElementById('artist'+d).textContent = info.videoData.author || '';
+    }
+    updateProgress(d);
+  }
+});
+
+function togglePlay(d){
+  const st = decks[d];
+  if(!st.iframe){ alert('حمّلي أغنية أول 🙂'); return; }
+  if(st.playing){ cmd(d,'pauseVideo'); }
+  else { applyVolumes(); cmd(d,'playVideo'); }
+}
+function restartDeck(d){
+  if(!decks[d].iframe) return;
+  cmd(d,'seekTo',[0,true]);
+  cmd(d,'playVideo');
+}
+function seekDeck(d, ev){
+  const st = decks[d];
+  if(!st.iframe || !st.duration) return;
+  const bar = ev.currentTarget.getBoundingClientRect();
+  const frac = (ev.clientX - bar.left) / bar.width;
+  cmd(d,'seekTo',[Math.max(0, Math.min(1,frac))*st.duration, true]);
+}
+
+function setPlayUI(d, playing){
+  const btn = document.getElementById('play'+d);
+  btn.classList.toggle('on', playing);
+  btn.textContent = playing ? '⏸ إيقاف' : '▶ تشغيل';
+  document.getElementById('live'+d).classList.toggle('on', playing);
+}
+
+function fmt(s){
+  s = Math.max(0, Math.floor(s||0));
+  return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+}
+function updateProgress(d){
+  const st = decks[d];
+  const pct = st.duration ? (st.current/st.duration*100) : 0;
+  document.getElementById('fill'+d).style.width = pct+'%';
+  document.getElementById('cur'+d).textContent = fmt(st.current);
+  document.getElementById('dur'+d).textContent = st.duration ? '-'+fmt(st.duration - st.current) : '0:00';
+}
+
+function applyVolumes(){
+  const volA = +document.getElementById('volA').value;
+  const volB = +document.getElementById('volB').value;
+  document.getElementById('volValA').textContent = volA+'%';
+  document.getElementById('volValB').textContent = volB+'%';
+
+  const x = +document.getElementById('xfader').value / 100; // 0 = full A, 1 = full B
+  const gA = Math.cos(x * Math.PI/2);   // equal-power curve
+  const gB = Math.sin(x * Math.PI/2);
+
+  cmd('A','setVolume',[Math.round(volA * gA)]);
+  cmd('B','setVolume',[Math.round(volB * gB)]);
+  cmd('A','unMute'); cmd('B','unMute');
+
+  const pA = Math.round((1-x)*100), pB = 100-pA;
+  document.getElementById('balA').style.width = pA+'%';
+  document.getElementById('pctA').textContent = pA+'% A';
+  document.getElementById('pctB').textContent = 'B '+pB+'%';
+}
+function centerXfader(){
+  document.getElementById('xfader').value = 50;
+  applyVolumes();
+}
+applyVolumes();
+</script>
+</body>
+</html>
