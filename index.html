@@ -18,6 +18,9 @@
     --b:#4fd8c3;
     --b-glow:rgba(79,216,195,.35);
     --b-dim:#123832;
+    --auto:#c792ff;
+    --auto-glow:rgba(199,146,255,.35);
+    --auto-dim:#33204a;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{
@@ -53,9 +56,9 @@
   .board{
     direction:ltr;
     display:grid;
-    grid-template-columns:1fr 220px 1fr;
+    grid-template-columns:1fr 230px 1fr;
     gap:16px;
-    max-width:1200px;
+    max-width:1220px;
     margin:0 auto;
     align-items:stretch;
   }
@@ -108,7 +111,6 @@
     color:var(--muted);font-size:13px;text-align:center;padding:12px;
   }
 
-  /* Visualizer */
   .viz{
     display:flex;align-items:flex-end;justify-content:center;gap:3px;
     height:46px;padding:4px 2px;
@@ -117,8 +119,7 @@
   }
   .viz span{
     flex:1;max-width:10px;height:8%;border-radius:3px 3px 0 0;
-    transition:height .12s ease;
-    opacity:.9;
+    transition:height .12s ease;opacity:.9;
   }
   .a .viz span{background:linear-gradient(180deg,#ffd28f,var(--a));box-shadow:0 0 6px var(--a-glow)}
   .b .viz span{background:linear-gradient(180deg,#a5f0e3,var(--b));box-shadow:0 0 6px var(--b-glow)}
@@ -133,6 +134,10 @@
   .progress .fill{height:100%;width:0%;border-radius:99px;transition:width .2s linear}
   .a .progress .fill{background:linear-gradient(90deg,var(--a-dim),var(--a))}
   .b .progress .fill{background:linear-gradient(90deg,var(--b-dim),var(--b))}
+  .progress .loopzone{
+    position:absolute;top:0;bottom:0;background:rgba(199,146,255,.30);
+    border-inline:1px solid var(--auto);display:none;
+  }
   .times{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);direction:ltr}
 
   .controls{display:flex;gap:8px}
@@ -144,6 +149,21 @@
   .a .controls .play.on{background:var(--a);color:#1a1206;border-color:var(--a);box-shadow:0 0 18px var(--a-glow)}
   .b .controls .play.on{background:var(--b);color:#062019;border-color:var(--b);box-shadow:0 0 18px var(--b-glow)}
   .controls button:active{transform:scale(.97)}
+
+  /* Loop row */
+  .looprow{display:flex;gap:6px;align-items:center}
+  .looprow .lbl{font-size:12px;color:var(--muted);white-space:nowrap}
+  .looprow button{
+    flex:1;padding:9px 0;border-radius:9px;border:1px solid var(--line);
+    background:var(--panel2);color:var(--text);font-size:12px;cursor:pointer;
+    font-family:inherit;font-weight:700;transition:.15s;
+  }
+  .looprow button:hover{border-color:var(--auto);color:var(--auto)}
+  .looprow button.set{background:var(--auto-dim);border-color:var(--auto);color:var(--auto)}
+  .looprow button.active{
+    background:var(--auto);color:#1d1030;border-color:var(--auto);
+    box-shadow:0 0 14px var(--auto-glow);
+  }
 
   .volrow{display:flex;align-items:center;gap:10px}
   .volrow .lbl{font-size:12px;color:var(--muted);width:52px}
@@ -160,7 +180,7 @@
   .b input.vol::-webkit-slider-thumb{background:var(--b);box-shadow:0 0 8px var(--b-glow)}
 
   /* Mixer */
-  .mixer{display:flex;flex-direction:column;justify-content:center;gap:18px;text-align:center}
+  .mixer{display:flex;flex-direction:column;justify-content:center;gap:16px;text-align:center}
   .mixer h2{font-size:14px;color:var(--muted);font-weight:700;letter-spacing:1px}
   .xf-labels{display:flex;justify-content:space-between;font-size:13px;font-weight:800;direction:ltr}
   .xf-labels .la{color:var(--a)}
@@ -187,9 +207,36 @@
   .bal-bar .bb{background:var(--b);flex:1;transition:.1s}
   .bal-nums{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);direction:ltr}
 
+  /* Auto-Mix */
+  .automix{
+    border-top:1px solid var(--line);padding-top:14px;
+    display:flex;flex-direction:column;gap:10px;
+  }
+  .automix-btn{
+    padding:13px;border-radius:12px;border:1px solid var(--line);
+    background:var(--panel2);color:var(--text);font-size:14px;font-weight:800;
+    cursor:pointer;font-family:inherit;transition:.2s;
+  }
+  .automix-btn.on{
+    background:var(--auto);color:#1d1030;border-color:var(--auto);
+    box-shadow:0 0 22px var(--auto-glow);
+    animation:autoGlow 2s ease-in-out infinite;
+  }
+  @keyframes autoGlow{
+    0%,100%{box-shadow:0 0 14px var(--auto-glow)}
+    50%{box-shadow:0 0 30px var(--auto-glow)}
+  }
+  .lead-row{display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;color:var(--muted)}
+  .lead-row input{
+    width:56px;background:var(--panel2);border:1px solid var(--line);
+    border-radius:8px;padding:7px 6px;color:var(--text);font-size:13px;
+    text-align:center;font-family:inherit;
+  }
+  .automix-status{font-size:11px;color:var(--auto);min-height:16px;font-weight:600}
+
   /* Queue */
   .queue{
-    max-width:1200px;margin:18px auto 0;
+    max-width:1220px;margin:18px auto 0;
     background:var(--panel);border:1px solid var(--line);border-radius:18px;
     padding:18px;
   }
@@ -213,8 +260,13 @@
   .q-item{
     display:flex;align-items:center;gap:10px;
     background:var(--panel2);border:1px solid var(--line);
-    border-radius:12px;padding:10px 12px;
+    border-radius:12px;padding:10px 12px;transition:.2s;
   }
+  .q-item.now{
+    border-color:var(--auto);
+    box-shadow:0 0 16px -4px var(--auto-glow);
+  }
+  .q-item.now .q-num{background:var(--auto);color:#1d1030}
   .q-num{
     width:26px;height:26px;border-radius:50%;flex-shrink:0;
     background:var(--bg);color:var(--muted);font-size:12px;font-weight:700;
@@ -234,7 +286,7 @@
   .q-empty{text-align:center;color:var(--muted);font-size:13px;padding:18px 0}
 
   .note{
-    max-width:1200px;margin:16px auto 0;background:var(--panel);
+    max-width:1220px;margin:16px auto 0;background:var(--panel);
     border:1px solid var(--line);border-radius:12px;padding:12px 16px;
     font-size:12px;color:var(--muted);line-height:1.9;
   }
@@ -275,11 +327,20 @@
       <div class="track-title" id="titleA"></div>
       <div class="track-artist" id="artistA"></div>
     </div>
-    <div class="progress" onclick="seekDeck('A',event)"><div class="fill" id="fillA"></div></div>
+    <div class="progress" onclick="seekDeck('A',event)">
+      <div class="fill" id="fillA"></div>
+      <div class="loopzone" id="loopzoneA"></div>
+    </div>
     <div class="times"><span id="curA">0:00</span><span id="durA">0:00</span></div>
     <div class="controls">
       <button class="play" id="playA" onclick="togglePlay('A')">▶ تشغيل</button>
       <button onclick="restartDeck('A')">⏮ من البداية</button>
+    </div>
+    <div class="looprow">
+      <span class="lbl">🔁 لوب:</span>
+      <button id="loopInA" onclick="loopIn('A')">بداية المقطع</button>
+      <button id="loopOutA" onclick="loopOut('A')">نهاية + تكرار</button>
+      <button id="loopOffA" onclick="loopOff('A')">إيقاف اللوب</button>
     </div>
     <div class="volrow">
       <span class="lbl">الفوليوم</span>
@@ -292,13 +353,22 @@
   <section class="mixer">
     <h2>الكروس فيدر</h2>
     <div class="xf-labels"><span class="la">A</span><span class="lb">B</span></div>
-    <input type="range" class="xfader" id="xfader" min="0" max="100" value="50" oninput="applyVolumes()">
+    <input type="range" class="xfader" id="xfader" min="0" max="100" value="50" oninput="manualXfader()">
     <div class="mix-balance">
       <div class="bal-bar"><div class="ba" id="balA"></div><div class="bb" id="balB"></div></div>
       <div class="bal-nums"><span id="pctA">50%</span><span id="pctB">50%</span></div>
     </div>
     <button class="center-btn" onclick="centerXfader()">رجّعيه للنص</button>
-    <p class="mix-hint">اسحبيه يسار = تسمعين A بس<br>يمين = تسمعين B بس<br>بالنص = الثنتين مع بعض</p>
+
+    <div class="automix">
+      <button class="automix-btn" id="automixBtn" onclick="toggleAutomix()">🔄 Auto-Mix: مطفي</button>
+      <div class="lead-row">
+        <span>ابدئي الدمج قبل النهاية بـ</span>
+        <input type="number" id="leadSec" min="10" max="60" value="30">
+        <span>ثانية</span>
+      </div>
+      <div class="automix-status" id="automixStatus"></div>
+    </div>
   </section>
 
   <!-- DECK B -->
@@ -319,11 +389,20 @@
       <div class="track-title" id="titleB"></div>
       <div class="track-artist" id="artistB"></div>
     </div>
-    <div class="progress" onclick="seekDeck('B',event)"><div class="fill" id="fillB"></div></div>
+    <div class="progress" onclick="seekDeck('B',event)">
+      <div class="fill" id="fillB"></div>
+      <div class="loopzone" id="loopzoneB"></div>
+    </div>
     <div class="times"><span id="curB">0:00</span><span id="durB">0:00</span></div>
     <div class="controls">
       <button class="play" id="playB" onclick="togglePlay('B')">▶ تشغيل</button>
       <button onclick="restartDeck('B')">⏮ من البداية</button>
+    </div>
+    <div class="looprow">
+      <span class="lbl">🔁 لوب:</span>
+      <button id="loopInB" onclick="loopIn('B')">بداية المقطع</button>
+      <button id="loopOutB" onclick="loopOut('B')">نهاية + تكرار</button>
+      <button id="loopOffB" onclick="loopOff('B')">إيقاف اللوب</button>
     </div>
     <div class="volrow">
       <span class="lbl">الفوليوم</span>
@@ -337,7 +416,7 @@
 <!-- QUEUE -->
 <section class="queue">
   <h2>🎵 قائمة الأغاني</h2>
-  <p class="sub">جهّزي أغاني المناسبة كلها هنا — القائمة تنحفظ تلقائياً حتى لو سكّرتي الموقع. اضغطي A أو B عشان ترسلين الأغنية للديك.</p>
+  <p class="sub">جهّزي أغاني المناسبة كلها هنا — القائمة تنحفظ تلقائياً. مع Auto-Mix تشتغل الأغاني بالترتيب وحدة ورا وحدة بدون ما تلمسين شي 🕺</p>
   <div class="q-add">
     <input type="text" id="qUrl" placeholder="الصقي رابط الأغنية هنا واضغطي إضافة..." onkeydown="if(event.key==='Enter')addToQueue()">
     <button onclick="addToQueue()">+ إضافة</button>
@@ -347,15 +426,18 @@
 
 <p class="note">
   <b>ملاحظات سريعة:</b>
-  لو طلعت رسالة "your account is being used on another device" — هذي من يوتيوب لأن حسابك شغّال بمكان ثاني (جوالك مثلاً). سكّري يوتيوب ميوزك من باقي الأجهزة واضغطي تشغيل مرة ثانية.
-  بعض الأغاني أصحابها مانعين تشغيلها خارج يوتيوب — جرّبي نسخة Audio أو Lyrics.
-  الترانزيشن الكلاسيكي: شغّلي الديك الثاني والكروس على الأول، وبعدين اسحبي الكروس بهدوء.
+  <b>Auto-Mix:</b> حطي أغانيك في القائمة، أرسلي الأولى للديك A وشغّليها، فعّلي Auto-Mix وروحي ارقصي — الميكسر يحمّل الجاية بالديك الثاني ويدمج بينهم بنفسه، ولما تخلص القائمة يرجع يعيدها من الأول.
+  <b>اللوب:</b> وقت المقطع اللي يعجبك اضغطي «بداية المقطع»، ولما يوصل نهايته اضغطي «نهاية + تكرار» — بيظل يعيد المقطع لين تضغطين «إيقاف اللوب».
+  لو طلعت رسالة "your account is being used on another device" فهي من يوتيوب — سكّري يوتيوب ميوزك من باقي الأجهزة.
+  للقوائم: روابط الـ playlist ما تنضاف — ادخلي على الأغنية نفسها وانسخي رابطها.
 </p>
 
 <script>
 const decks = {
-  A: {iframe:null, ready:false, playing:false, duration:0, current:0, listenTimer:null},
-  B: {iframe:null, ready:false, playing:false, duration:0, current:0, listenTimer:null}
+  A: {iframe:null, ready:false, playing:false, duration:0, current:0, listenTimer:null,
+      loopIn:null, loopOut:null, loopActive:false, queueIndex:null},
+  B: {iframe:null, ready:false, playing:false, duration:0, current:0, listenTimer:null,
+      loopIn:null, loopOut:null, loopActive:false, queueIndex:null}
 };
 
 /* ---------- Deck engine ---------- */
@@ -367,14 +449,16 @@ function extractId(url){
   return null;
 }
 
-function loadDeck(d, directUrl){
+function loadDeck(d, directUrl, queueIndex){
   const url = directUrl || document.getElementById('url'+d).value;
   const id = extractId(url);
-  if(!id){ alert('الرابط مو واضح 🙈 تأكدي إنه رابط يوتيوب صحيح'); return; }
+  if(!id){ alert('الرابط مو واضح 🙈 تأكدي إنه رابط أغنية (مو playlist) من يوتيوب أو يوتيوب ميوزك'); return; }
   if(directUrl) document.getElementById('url'+d).value = directUrl;
 
   const st = decks[d];
   st.ready=false; st.playing=false; st.duration=0; st.current=0;
+  st.queueIndex = (typeof queueIndex==='number') ? queueIndex : null;
+  clearLoopState(d);
   setPlayUI(d,false);
   document.getElementById('title'+d).textContent = 'جاري التحميل...';
   document.getElementById('artist'+d).textContent = '';
@@ -393,6 +477,7 @@ function loadDeck(d, directUrl){
       post(d, {event:'listening', id:d, channel:'widget'});
     }, 400);
   });
+  renderQueue();
 }
 
 function post(d, obj){
@@ -425,9 +510,13 @@ window.addEventListener('message', (e)=>{
     if(typeof info.duration === 'number' && info.duration>0) st.duration = info.duration;
     if(typeof info.currentTime === 'number') st.current = info.currentTime;
     if(typeof info.playerState === 'number'){
+      const wasPlaying = st.playing;
       st.playing = (info.playerState === 1);
       setPlayUI(d, st.playing);
-      if(info.playerState === 0){ st.playing=false; setPlayUI(d,false); }
+      if(info.playerState === 0){
+        st.playing=false; setPlayUI(d,false);
+        onTrackEnded(d);
+      }
     }
     if(info.videoData && info.videoData.title){
       document.getElementById('title'+d).textContent = info.videoData.title;
@@ -476,6 +565,7 @@ function updateProgress(d){
   document.getElementById('dur'+d).textContent = st.duration ? '-'+fmt(st.duration - st.current) : '0:00';
 }
 
+/* ---------- Volumes & crossfader ---------- */
 function applyVolumes(){
   const volA = +document.getElementById('volA').value;
   const volB = +document.getElementById('volB').value;
@@ -495,10 +585,85 @@ function applyVolumes(){
   document.getElementById('pctA').textContent = pA+'% A';
   document.getElementById('pctB').textContent = 'B '+pB+'%';
 }
+function manualXfader(){
+  cancelFade(); // user touched it — stop any auto fade
+  applyVolumes();
+}
 function centerXfader(){
+  cancelFade();
   document.getElementById('xfader').value = 50;
   applyVolumes();
 }
+
+/* smooth auto crossfade */
+let fadeTimer = null;
+function fadeTo(target, seconds){
+  cancelFade();
+  const xf = document.getElementById('xfader');
+  const start = +xf.value;
+  const steps = Math.max(10, Math.round(seconds*10));
+  let i = 0;
+  fadeTimer = setInterval(()=>{
+    i++;
+    const t = i/steps;
+    // ease in-out
+    const e = t<0.5 ? 2*t*t : 1 - Math.pow(-2*t+2,2)/2;
+    xf.value = start + (target-start)*e;
+    applyVolumes();
+    if(i>=steps){ cancelFade(); }
+  }, 100);
+}
+function cancelFade(){
+  if(fadeTimer){ clearInterval(fadeTimer); fadeTimer=null; }
+}
+
+/* ---------- Loop ---------- */
+function clearLoopState(d){
+  const st = decks[d];
+  st.loopIn=null; st.loopOut=null; st.loopActive=false;
+  document.getElementById('loopIn'+d).classList.remove('set');
+  document.getElementById('loopOut'+d).classList.remove('active');
+  document.getElementById('loopzone'+d).style.display='none';
+}
+function loopIn(d){
+  const st = decks[d];
+  if(!st.iframe){ alert('حمّلي أغنية أول 🙂'); return; }
+  st.loopIn = st.current;
+  st.loopActive = false;
+  document.getElementById('loopIn'+d).classList.add('set');
+  document.getElementById('loopOut'+d).classList.remove('active');
+  document.getElementById('loopzone'+d).style.display='none';
+}
+function loopOut(d){
+  const st = decks[d];
+  if(st.loopIn===null){ alert('حددي بداية المقطع أول 🙂'); return; }
+  if(st.current <= st.loopIn + 0.8){ alert('خلي المقطع أطول شوي — نهايته لازم تكون بعد بدايته'); return; }
+  st.loopOut = st.current;
+  st.loopActive = true;
+  document.getElementById('loopOut'+d).classList.add('active');
+  // show loop zone on progress bar
+  if(st.duration){
+    const z = document.getElementById('loopzone'+d);
+    z.style.display='block';
+    z.style.left = (st.loopIn/st.duration*100)+'%';
+    z.style.width = ((st.loopOut-st.loopIn)/st.duration*100)+'%';
+  }
+  cmd(d,'seekTo',[st.loopIn,true]);
+}
+function loopOff(d){
+  clearLoopState(d);
+}
+/* loop watcher */
+setInterval(()=>{
+  ['A','B'].forEach(d=>{
+    const st = decks[d];
+    if(st.loopActive && st.playing && st.loopOut!==null){
+      if(st.current >= st.loopOut - 0.15){
+        cmd(d,'seekTo',[st.loopIn,true]);
+      }
+    }
+  });
+}, 150);
 
 /* ---------- Visualizer ---------- */
 const BARS = 28;
@@ -512,7 +677,6 @@ setInterval(()=>{
     const playing = decks[d].playing;
     for(let i=0;i<bars.length;i++){
       if(playing){
-        // wave-like motion: sine base + randomness
         const t = Date.now()/300;
         const base = 35 + 30*Math.sin(t + i*0.55);
         const h = Math.max(8, Math.min(96, base + Math.random()*30));
@@ -539,7 +703,7 @@ function addToQueue(){
   const input = document.getElementById('qUrl');
   const url = input.value.trim();
   const id = extractId(url);
-  if(!id){ alert('الرابط مو واضح 🙈 تأكدي إنه رابط يوتيوب صحيح'); return; }
+  if(!id){ alert('الرابط مو واضح 🙈 تأكدي إنه رابط أغنية (مو playlist) من يوتيوب أو يوتيوب ميوزك'); return; }
   const item = {id:id, url:'https://www.youtube.com/watch?v='+id, title:'أغنية '+id};
   queue.push(item);
   input.value = '';
@@ -562,6 +726,11 @@ function fetchTitle(item){
 
 function removeFromQueue(i){
   queue.splice(i,1);
+  // fix stored indices
+  ['A','B'].forEach(d=>{
+    if(decks[d].queueIndex===i) decks[d].queueIndex=null;
+    else if(decks[d].queueIndex>i) decks[d].queueIndex--;
+  });
   saveQueue();
   renderQueue();
 }
@@ -573,24 +742,137 @@ function renderQueue(){
     return;
   }
   list.innerHTML = '';
+  const nowPlayingIdx = getNowPlayingQueueIndex();
   queue.forEach((item,i)=>{
     const row = document.createElement('div');
-    row.className = 'q-item';
+    row.className = 'q-item' + (i===nowPlayingIdx ? ' now' : '');
     row.innerHTML =
       '<span class="q-num">'+(i+1)+'</span>'+
       '<span class="q-title"></span>'+
       '<span class="q-btns">'+
-        '<button class="toA" onclick="loadDeck(\'A\', queue['+i+'].url)">← A</button>'+
-        '<button class="toB" onclick="loadDeck(\'B\', queue['+i+'].url)">← B</button>'+
+        '<button class="toA" onclick="loadDeck(\'A\', queue['+i+'].url, '+i+')">← A</button>'+
+        '<button class="toB" onclick="loadDeck(\'B\', queue['+i+'].url, '+i+')">← B</button>'+
         '<button class="del" onclick="removeFromQueue('+i+')">✕</button>'+
       '</span>';
     row.querySelector('.q-title').textContent = item.title;
     list.appendChild(row);
   });
 }
+function getNowPlayingQueueIndex(){
+  // the playing deck with the strongest crossfader side
+  const x = +document.getElementById('xfader').value;
+  if(decks.A.playing && decks.B.playing) return x<=50 ? decks.A.queueIndex : decks.B.queueIndex;
+  if(decks.A.playing) return decks.A.queueIndex;
+  if(decks.B.playing) return decks.B.queueIndex;
+  return null;
+}
 
-// refresh titles for saved items that never resolved
 queue.forEach(item=>{ if(item.title && item.title.startsWith('أغنية ')) fetchTitle(item); });
+
+/* ---------- Auto-Mix ---------- */
+let automix = false;
+let transitioning = false;
+
+function toggleAutomix(){
+  automix = !automix;
+  const btn = document.getElementById('automixBtn');
+  btn.classList.toggle('on', automix);
+  btn.textContent = automix ? '🔄 Auto-Mix: شغال' : '🔄 Auto-Mix: مطفي';
+  setStatus(automix ? 'جاهز — أكمل القائمة بالترتيب لحاله ✨' : '');
+  if(!automix){ transitioning=false; cancelFade(); }
+}
+function setStatus(msg){
+  document.getElementById('automixStatus').textContent = msg || '';
+}
+
+function nextQueueIndex(fromIdx){
+  if(!queue.length) return null;
+  if(fromIdx===null || fromIdx===undefined) return 0;
+  return (fromIdx+1) % queue.length; // loop back to start
+}
+
+function activeDeckForAutomix(){
+  // the deck currently playing; if both, the one the crossfader favors
+  const x = +document.getElementById('xfader').value;
+  if(decks.A.playing && decks.B.playing) return x<=50 ? 'A' : 'B';
+  if(decks.A.playing) return 'A';
+  if(decks.B.playing) return 'B';
+  return null;
+}
+
+/* main automix watcher */
+setInterval(()=>{
+  if(!automix || transitioning) return;
+  const d = activeDeckForAutomix();
+  if(!d) return;
+  const st = decks[d];
+  if(!st.duration || st.loopActive) return; // looping = user wants to stay
+  const lead = Math.max(10, Math.min(60, +document.getElementById('leadSec').value || 30));
+  const remaining = st.duration - st.current;
+  if(remaining <= lead && remaining > 1){
+    startTransition(d, lead);
+  }
+}, 500);
+
+function startTransition(fromDeck, lead){
+  const toDeck = fromDeck==='A' ? 'B' : 'A';
+  const nextIdx = nextQueueIndex(decks[fromDeck].queueIndex);
+  if(nextIdx===null){ setStatus('القائمة فاضية — ضيفي أغاني عشان الأوتو مكس يشتغل'); return; }
+
+  transitioning = true;
+  setStatus('يجهّز الأغنية الجاية: '+(queue[nextIdx].title||'')+' ⏳');
+
+  loadDeck(toDeck, queue[nextIdx].url, nextIdx);
+
+  // wait for the new deck to become ready, then play + fade
+  let waited = 0;
+  const waiter = setInterval(()=>{
+    waited += 300;
+    if(decks[toDeck].ready){
+      clearInterval(waiter);
+      cmd(toDeck,'playVideo');
+      setStatus('يدمج الحين 🎚️');
+      fadeTo(toDeck==='B' ? 100 : 0, Math.max(5, lead-2));
+      // release transition lock after the fade finishes
+      setTimeout(()=>{
+        transitioning = false;
+        setStatus('Auto-Mix شغال ✨');
+        renderQueue();
+      }, Math.max(5, lead-2)*1000 + 500);
+    } else if(waited > 12000){
+      // couldn't load (blocked video?) — skip it
+      clearInterval(waiter);
+      transitioning = false;
+      setStatus('الأغنية الجاية ما اشتغلت — بيتخطاها 🙈');
+      decks[toDeck].queueIndex = nextIdx; // mark so next attempt moves forward
+    }
+  }, 300);
+}
+
+/* if a track fully ends (missed transition or automix just turned on) — jump to next */
+function onTrackEnded(d){
+  if(!automix || transitioning) return;
+  const nextIdx = nextQueueIndex(decks[d].queueIndex);
+  if(nextIdx===null) return;
+  transitioning = true;
+  setStatus('يشغّل الأغنية الجاية ▶');
+  loadDeck(d, queue[nextIdx].url, nextIdx);
+  let waited = 0;
+  const waiter = setInterval(()=>{
+    waited += 300;
+    if(decks[d].ready){
+      clearInterval(waiter);
+      cmd(d,'playVideo');
+      transitioning = false;
+      setStatus('Auto-Mix شغال ✨');
+      renderQueue();
+    } else if(waited > 12000){
+      clearInterval(waiter);
+      transitioning = false;
+      setStatus('أغنية ما اشتغلت — جربي تشغيل اللي بعدها يدوي');
+    }
+  }, 300);
+}
 
 renderQueue();
 applyVolumes();
