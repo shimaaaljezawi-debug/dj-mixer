@@ -3,64 +3,85 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ديجي ميكسر — DJ Mixer</title>
+<title>DJ SHIMY 🎧</title>
 <style>
   :root{
-    --bg:#101014;
-    --panel:#1a1a21;
-    --panel2:#22222b;
-    --line:#2e2e3a;
-    --text:#f0eee9;
-    --muted:#8b8b99;
-    --a:#ffb347;      /* Deck A amber */
+    --bg:#0b0b10;
+    --panel:#16161e;
+    --panel2:#20202b;
+    --line:#2e2e3c;
+    --text:#f2f0ea;
+    --muted:#8f8fa0;
+    --a:#ffb347;
+    --a-glow:rgba(255,179,71,.35);
     --a-dim:#4a3319;
-    --b:#4fd8c3;      /* Deck B teal */
+    --b:#4fd8c3;
+    --b-glow:rgba(79,216,195,.35);
     --b-dim:#123832;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{
-    background:var(--bg);
+    background:
+      radial-gradient(1000px 500px at 15% -10%, rgba(255,179,71,.07), transparent 60%),
+      radial-gradient(1000px 500px at 85% -10%, rgba(79,216,195,.07), transparent 60%),
+      var(--bg);
     color:var(--text);
     font-family:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif;
     min-height:100vh;
     padding:24px 16px 40px;
   }
   header{text-align:center;margin-bottom:22px}
-  header h1{font-size:22px;font-weight:700;letter-spacing:.5px}
-  header p{color:var(--muted);font-size:13px;margin-top:4px}
+  header h1{
+    font-size:40px;font-weight:800;letter-spacing:4px;
+    direction:ltr;
+    background:linear-gradient(90deg,var(--a),#fff,var(--b));
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;
+    filter:drop-shadow(0 0 18px rgba(255,179,71,.35)) drop-shadow(0 0 18px rgba(79,216,195,.25));
+    animation:glowShift 4s ease-in-out infinite;
+  }
+  @keyframes glowShift{
+    0%,100%{filter:drop-shadow(0 0 18px rgba(255,179,71,.45)) drop-shadow(0 0 10px rgba(79,216,195,.15))}
+    50%{filter:drop-shadow(0 0 10px rgba(255,179,71,.15)) drop-shadow(0 0 18px rgba(79,216,195,.45))}
+  }
+  header .tagline{
+    font-size:13px;font-weight:700;letter-spacing:3px;color:var(--muted);
+    margin-top:2px;text-transform:uppercase;direction:ltr;
+  }
+  header p{color:var(--muted);font-size:13px;margin-top:8px}
 
   .board{
-    direction:ltr; /* fixed physical layout: A left, mixer center, B right */
+    direction:ltr;
     display:grid;
     grid-template-columns:1fr 220px 1fr;
     gap:16px;
-    max-width:1180px;
+    max-width:1200px;
     margin:0 auto;
     align-items:stretch;
   }
   .deck,.mixer{
     background:var(--panel);
     border:1px solid var(--line);
-    border-radius:16px;
+    border-radius:18px;
     padding:16px;
     direction:rtl;
+    transition:box-shadow .4s;
   }
   .deck{display:flex;flex-direction:column;gap:12px}
   .deck.a{border-top:3px solid var(--a)}
   .deck.b{border-top:3px solid var(--b)}
+  .deck.a.playing{box-shadow:0 0 40px -6px var(--a-glow), inset 0 0 60px -40px var(--a-glow)}
+  .deck.b.playing{box-shadow:0 0 40px -6px var(--b-glow), inset 0 0 60px -40px var(--b-glow)}
 
   .deck-head{display:flex;align-items:center;justify-content:space-between}
-  .deck-tag{
-    font-weight:700;font-size:13px;padding:3px 12px;border-radius:99px;
-  }
+  .deck-tag{font-weight:800;font-size:13px;padding:3px 14px;border-radius:99px}
   .a .deck-tag{background:var(--a-dim);color:var(--a)}
   .b .deck-tag{background:var(--b-dim);color:var(--b)}
-  .live{
-    font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px;
-  }
-  .live .dot{width:8px;height:8px;border-radius:50%;background:#3a3a46;transition:.2s}
-  .a .live.on .dot{background:var(--a);box-shadow:0 0 8px var(--a)}
-  .b .live.on .dot{background:var(--b);box-shadow:0 0 8px var(--b)}
+  .live{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px}
+  .live .dot{width:9px;height:9px;border-radius:50%;background:#3a3a46;transition:.2s}
+  @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.6}}
+  .a .live.on .dot{background:var(--a);box-shadow:0 0 10px var(--a);animation:pulse 1s infinite}
+  .b .live.on .dot{background:var(--b);box-shadow:0 0 10px var(--b);animation:pulse 1s infinite}
 
   .loadrow{display:flex;gap:8px}
   .loadrow input{
@@ -79,7 +100,7 @@
 
   .video-wrap{
     position:relative;width:100%;aspect-ratio:16/9;background:#000;
-    border-radius:10px;overflow:hidden;border:1px solid var(--line);
+    border-radius:12px;overflow:hidden;border:1px solid var(--line);
   }
   .video-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
   .video-empty{
@@ -87,7 +108,22 @@
     color:var(--muted);font-size:13px;text-align:center;padding:12px;
   }
 
-  .track-title{font-size:14px;font-weight:600;min-height:20px;line-height:1.4}
+  /* Visualizer */
+  .viz{
+    display:flex;align-items:flex-end;justify-content:center;gap:3px;
+    height:46px;padding:4px 2px;
+    background:var(--panel2);border:1px solid var(--line);border-radius:10px;
+    overflow:hidden;
+  }
+  .viz span{
+    flex:1;max-width:10px;height:8%;border-radius:3px 3px 0 0;
+    transition:height .12s ease;
+    opacity:.9;
+  }
+  .a .viz span{background:linear-gradient(180deg,#ffd28f,var(--a));box-shadow:0 0 6px var(--a-glow)}
+  .b .viz span{background:linear-gradient(180deg,#a5f0e3,var(--b));box-shadow:0 0 6px var(--b-glow)}
+
+  .track-title{font-size:14px;font-weight:700;min-height:20px;line-height:1.4}
   .track-artist{font-size:12px;color:var(--muted);min-height:16px}
 
   .progress{
@@ -95,18 +131,18 @@
     position:relative;overflow:hidden;border:1px solid var(--line);
   }
   .progress .fill{height:100%;width:0%;border-radius:99px;transition:width .2s linear}
-  .a .progress .fill{background:var(--a)}
-  .b .progress .fill{background:var(--b)}
+  .a .progress .fill{background:linear-gradient(90deg,var(--a-dim),var(--a))}
+  .b .progress .fill{background:linear-gradient(90deg,var(--b-dim),var(--b))}
   .times{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);direction:ltr}
 
   .controls{display:flex;gap:8px}
   .controls button{
     flex:1;padding:12px 0;border-radius:10px;border:1px solid var(--line);
     background:var(--panel2);color:var(--text);font-size:14px;cursor:pointer;
-    font-family:inherit;font-weight:600;transition:.15s;
+    font-family:inherit;font-weight:700;transition:.15s;
   }
-  .a .controls .play.on{background:var(--a);color:#1a1206;border-color:var(--a)}
-  .b .controls .play.on{background:var(--b);color:#062019;border-color:var(--b)}
+  .a .controls .play.on{background:var(--a);color:#1a1206;border-color:var(--a);box-shadow:0 0 18px var(--a-glow)}
+  .b .controls .play.on{background:var(--b);color:#062019;border-color:var(--b);box-shadow:0 0 18px var(--b-glow)}
   .controls button:active{transform:scale(.97)}
 
   .volrow{display:flex;align-items:center;gap:10px}
@@ -120,13 +156,13 @@
     -webkit-appearance:none;width:20px;height:20px;border-radius:50%;
     background:var(--text);border:3px solid var(--bg);cursor:pointer;
   }
-  .a input.vol::-webkit-slider-thumb{background:var(--a)}
-  .b input.vol::-webkit-slider-thumb{background:var(--b)}
+  .a input.vol::-webkit-slider-thumb{background:var(--a);box-shadow:0 0 8px var(--a-glow)}
+  .b input.vol::-webkit-slider-thumb{background:var(--b);box-shadow:0 0 8px var(--b-glow)}
 
   /* Mixer */
   .mixer{display:flex;flex-direction:column;justify-content:center;gap:18px;text-align:center}
-  .mixer h2{font-size:14px;color:var(--muted);font-weight:600;letter-spacing:1px}
-  .xf-labels{display:flex;justify-content:space-between;font-size:12px;font-weight:700;direction:ltr}
+  .mixer h2{font-size:14px;color:var(--muted);font-weight:700;letter-spacing:1px}
+  .xf-labels{display:flex;justify-content:space-between;font-size:13px;font-weight:800;direction:ltr}
   .xf-labels .la{color:var(--a)}
   .xf-labels .lb{color:var(--b)}
   .xfader{
@@ -137,6 +173,7 @@
   .xfader::-webkit-slider-thumb{
     -webkit-appearance:none;width:26px;height:34px;border-radius:8px;
     background:var(--text);border:2px solid var(--bg);cursor:grab;
+    box-shadow:0 0 12px rgba(255,255,255,.25);
   }
   .mix-hint{font-size:11px;color:var(--muted);line-height:1.7}
   .center-btn{
@@ -150,8 +187,54 @@
   .bal-bar .bb{background:var(--b);flex:1;transition:.1s}
   .bal-nums{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);direction:ltr}
 
+  /* Queue */
+  .queue{
+    max-width:1200px;margin:18px auto 0;
+    background:var(--panel);border:1px solid var(--line);border-radius:18px;
+    padding:18px;
+  }
+  .queue h2{font-size:16px;font-weight:800;margin-bottom:4px}
+  .queue .sub{font-size:12px;color:var(--muted);margin-bottom:14px}
+  .q-add{display:flex;gap:8px;margin-bottom:14px}
+  .q-add input{
+    flex:1;background:var(--panel2);border:1px solid var(--line);
+    border-radius:10px;padding:11px 12px;color:var(--text);font-size:13px;
+    direction:ltr;text-align:left;min-width:0;
+  }
+  .q-add input::placeholder{color:var(--muted);direction:rtl;text-align:right}
+  .q-add button{
+    background:linear-gradient(90deg,var(--a-dim),var(--b-dim));
+    border:1px solid var(--line);color:var(--text);
+    border-radius:10px;padding:0 22px;font-size:13px;font-weight:700;
+    cursor:pointer;font-family:inherit;
+  }
+  .q-add button:hover{border-color:var(--muted)}
+  .q-list{display:flex;flex-direction:column;gap:8px}
+  .q-item{
+    display:flex;align-items:center;gap:10px;
+    background:var(--panel2);border:1px solid var(--line);
+    border-radius:12px;padding:10px 12px;
+  }
+  .q-num{
+    width:26px;height:26px;border-radius:50%;flex-shrink:0;
+    background:var(--bg);color:var(--muted);font-size:12px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .q-title{flex:1;font-size:13px;font-weight:600;line-height:1.4;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .q-btns{display:flex;gap:6px;flex-shrink:0}
+  .q-btns button{
+    border-radius:8px;border:1px solid var(--line);background:var(--bg);
+    color:var(--text);font-size:12px;font-weight:800;cursor:pointer;
+    font-family:inherit;padding:7px 12px;transition:.15s;
+  }
+  .q-btns .toA:hover{background:var(--a);color:#1a1206;border-color:var(--a)}
+  .q-btns .toB:hover{background:var(--b);color:#062019;border-color:var(--b)}
+  .q-btns .del{color:var(--muted)}
+  .q-btns .del:hover{color:#ff7070;border-color:#ff7070}
+  .q-empty{text-align:center;color:var(--muted);font-size:13px;padding:18px 0}
+
   .note{
-    max-width:1180px;margin:16px auto 0;background:var(--panel);
+    max-width:1200px;margin:16px auto 0;background:var(--panel);
     border:1px solid var(--line);border-radius:12px;padding:12px 16px;
     font-size:12px;color:var(--muted);line-height:1.9;
   }
@@ -160,13 +243,15 @@
   @media(max-width:900px){
     .board{grid-template-columns:1fr}
     .mixer{order:3}
+    .q-title{white-space:normal}
   }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>🎧 ديجي ميكسر</h1>
+  <h1>🎧 DJ SHIMY</h1>
+  <div class="tagline">ON THE DECKS</div>
   <p>الصقي رابط يوتيوب أو يوتيوب ميوزك في كل ديك، وامزجي بينهم بالكروس فيدر</p>
 </header>
 
@@ -183,8 +268,9 @@
       <button onclick="loadDeck('A')">تحميل</button>
     </div>
     <div class="video-wrap" id="wrapA">
-      <div class="video-empty">ما فيه أغنية بعد — الصقي رابط فوق واضغطي «تحميل»</div>
+      <div class="video-empty">ما فيه أغنية بعد — الصقي رابط فوق أو أرسلي من القائمة تحت</div>
     </div>
+    <div class="viz" id="vizA"></div>
     <div>
       <div class="track-title" id="titleA"></div>
       <div class="track-artist" id="artistA"></div>
@@ -226,8 +312,9 @@
       <button onclick="loadDeck('B')">تحميل</button>
     </div>
     <div class="video-wrap" id="wrapB">
-      <div class="video-empty">ما فيه أغنية بعد — الصقي رابط فوق واضغطي «تحميل»</div>
+      <div class="video-empty">ما فيه أغنية بعد — الصقي رابط فوق أو أرسلي من القائمة تحت</div>
     </div>
+    <div class="viz" id="vizB"></div>
     <div>
       <div class="track-title" id="titleB"></div>
       <div class="track-artist" id="artistB"></div>
@@ -247,11 +334,22 @@
 
 </div>
 
+<!-- QUEUE -->
+<section class="queue">
+  <h2>🎵 قائمة الأغاني</h2>
+  <p class="sub">جهّزي أغاني المناسبة كلها هنا — القائمة تنحفظ تلقائياً حتى لو سكّرتي الموقع. اضغطي A أو B عشان ترسلين الأغنية للديك.</p>
+  <div class="q-add">
+    <input type="text" id="qUrl" placeholder="الصقي رابط الأغنية هنا واضغطي إضافة..." onkeydown="if(event.key==='Enter')addToQueue()">
+    <button onclick="addToQueue()">+ إضافة</button>
+  </div>
+  <div class="q-list" id="qList"></div>
+</section>
+
 <p class="note">
   <b>ملاحظات سريعة:</b>
-  بعض الأغاني أصحابها مانعين تشغيلها خارج يوتيوب — لو أغنية ما اشتغلت، جرّبي نسخة ثانية منها (مثلاً Audio أو Lyrics بدل الكليب الرسمي).
-  وأول ضغطة «تشغيل» لازم تكون منك (المتصفح يمنع التشغيل التلقائي).
-  الطريقة الكلاسيكية للترانزيشن: شغّلي B وهي على أقل فوليوم أو الكروس على A، وبعدين اسحبي الكروس فيدر بهدوء من A إلى B.
+  لو طلعت رسالة "your account is being used on another device" — هذي من يوتيوب لأن حسابك شغّال بمكان ثاني (جوالك مثلاً). سكّري يوتيوب ميوزك من باقي الأجهزة واضغطي تشغيل مرة ثانية.
+  بعض الأغاني أصحابها مانعين تشغيلها خارج يوتيوب — جرّبي نسخة Audio أو Lyrics.
+  الترانزيشن الكلاسيكي: شغّلي الديك الثاني والكروس على الأول، وبعدين اسحبي الكروس بهدوء.
 </p>
 
 <script>
@@ -260,6 +358,7 @@ const decks = {
   B: {iframe:null, ready:false, playing:false, duration:0, current:0, listenTimer:null}
 };
 
+/* ---------- Deck engine ---------- */
 function extractId(url){
   url = (url||'').trim();
   const m = url.match(/(?:youtube\.com\/(?:watch\?.*v=|embed\/|shorts\/)|youtu\.be\/|music\.youtube\.com\/watch\?.*v=)([A-Za-z0-9_-]{11})/);
@@ -268,10 +367,11 @@ function extractId(url){
   return null;
 }
 
-function loadDeck(d){
-  const url = document.getElementById('url'+d).value;
+function loadDeck(d, directUrl){
+  const url = directUrl || document.getElementById('url'+d).value;
   const id = extractId(url);
   if(!id){ alert('الرابط مو واضح 🙈 تأكدي إنه رابط يوتيوب صحيح'); return; }
+  if(directUrl) document.getElementById('url'+d).value = directUrl;
 
   const st = decks[d];
   st.ready=false; st.playing=false; st.duration=0; st.current=0;
@@ -361,6 +461,7 @@ function setPlayUI(d, playing){
   btn.classList.toggle('on', playing);
   btn.textContent = playing ? '⏸ إيقاف' : '▶ تشغيل';
   document.getElementById('live'+d).classList.toggle('on', playing);
+  document.getElementById('deck'+d).classList.toggle('playing', playing);
 }
 
 function fmt(s){
@@ -381,8 +482,8 @@ function applyVolumes(){
   document.getElementById('volValA').textContent = volA+'%';
   document.getElementById('volValB').textContent = volB+'%';
 
-  const x = +document.getElementById('xfader').value / 100; // 0 = full A, 1 = full B
-  const gA = Math.cos(x * Math.PI/2);   // equal-power curve
+  const x = +document.getElementById('xfader').value / 100;
+  const gA = Math.cos(x * Math.PI/2);
   const gB = Math.sin(x * Math.PI/2);
 
   cmd('A','setVolume',[Math.round(volA * gA)]);
@@ -398,6 +499,100 @@ function centerXfader(){
   document.getElementById('xfader').value = 50;
   applyVolumes();
 }
+
+/* ---------- Visualizer ---------- */
+const BARS = 28;
+['A','B'].forEach(d=>{
+  const box = document.getElementById('viz'+d);
+  for(let i=0;i<BARS;i++){ box.appendChild(document.createElement('span')); }
+});
+setInterval(()=>{
+  ['A','B'].forEach(d=>{
+    const bars = document.getElementById('viz'+d).children;
+    const playing = decks[d].playing;
+    for(let i=0;i<bars.length;i++){
+      if(playing){
+        // wave-like motion: sine base + randomness
+        const t = Date.now()/300;
+        const base = 35 + 30*Math.sin(t + i*0.55);
+        const h = Math.max(8, Math.min(96, base + Math.random()*30));
+        bars[i].style.height = h+'%';
+      } else {
+        bars[i].style.height = '8%';
+      }
+    }
+  });
+}, 120);
+
+/* ---------- Queue ---------- */
+let queue = [];
+try{
+  const saved = localStorage.getItem('djQueue');
+  if(saved) queue = JSON.parse(saved);
+}catch(_){}
+
+function saveQueue(){
+  try{ localStorage.setItem('djQueue', JSON.stringify(queue)); }catch(_){}
+}
+
+function addToQueue(){
+  const input = document.getElementById('qUrl');
+  const url = input.value.trim();
+  const id = extractId(url);
+  if(!id){ alert('الرابط مو واضح 🙈 تأكدي إنه رابط يوتيوب صحيح'); return; }
+  const item = {id:id, url:'https://www.youtube.com/watch?v='+id, title:'أغنية '+id};
+  queue.push(item);
+  input.value = '';
+  saveQueue();
+  renderQueue();
+  fetchTitle(item);
+}
+
+function fetchTitle(item){
+  fetch('https://noembed.com/embed?url='+encodeURIComponent(item.url))
+    .then(r=>r.json())
+    .then(j=>{
+      if(j && j.title){
+        item.title = j.title;
+        saveQueue();
+        renderQueue();
+      }
+    }).catch(_=>{});
+}
+
+function removeFromQueue(i){
+  queue.splice(i,1);
+  saveQueue();
+  renderQueue();
+}
+
+function renderQueue(){
+  const list = document.getElementById('qList');
+  if(!queue.length){
+    list.innerHTML = '<div class="q-empty">القائمة فاضية — الصقي روابط أغانيك فوق وجهّزيها قبل المناسبة 🎉</div>';
+    return;
+  }
+  list.innerHTML = '';
+  queue.forEach((item,i)=>{
+    const row = document.createElement('div');
+    row.className = 'q-item';
+    row.innerHTML =
+      '<span class="q-num">'+(i+1)+'</span>'+
+      '<span class="q-title"></span>'+
+      '<span class="q-btns">'+
+        '<button class="toA" onclick="loadDeck(\'A\', queue['+i+'].url)">← A</button>'+
+        '<button class="toB" onclick="loadDeck(\'B\', queue['+i+'].url)">← B</button>'+
+        '<button class="del" onclick="removeFromQueue('+i+')">✕</button>'+
+      '</span>';
+    row.querySelector('.q-title').textContent = item.title;
+    list.appendChild(row);
+  });
+}
+
+// refresh titles for saved items that never resolved
+queue.forEach(item=>{ if(item.title && item.title.startsWith('أغنية ')) fetchTitle(item); });
+
+renderQueue();
 applyVolumes();
 </script>
 </body>
