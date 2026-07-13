@@ -56,13 +56,13 @@
   .board{
     direction:ltr;
     display:grid;
-    grid-template-columns:1fr 230px 1fr;
+    grid-template-columns:minmax(0,1fr) 230px minmax(0,1fr);
     gap:16px;
     max-width:1260px;
     margin:0 auto;
     align-items:start;
   }
-  .col{display:flex;flex-direction:column;gap:14px}
+  .col{display:flex;flex-direction:column;gap:14px;min-width:0}
   .deck,.mixer,.dqueue{
     background:var(--panel);
     border:1px solid var(--line);
@@ -71,7 +71,8 @@
     direction:rtl;
     transition:box-shadow .4s;
   }
-  .deck{display:flex;flex-direction:column;gap:12px}
+  .deck{display:flex;flex-direction:column;gap:12px;min-width:0;overflow:hidden}
+  .track-title,.track-artist{overflow-wrap:break-word;word-break:break-word}
   .deck.a{border-top:3px solid var(--a)}
   .deck.b{border-top:3px solid var(--b)}
   .deck.a.playing{box-shadow:0 0 46px -6px var(--a-glow), inset 0 0 70px -40px var(--a-glow)}
@@ -1193,10 +1194,11 @@ function activeDeck(){
   return null;
 }
 
-/* --- preloader v2: load early, warm up ONLY close to the mix moment --- */
-/* التحميل المبكر ما يزعج حساب يوتيوب، التسخين (تشغيل مكتوم) هو اللي ممكن —
-   فنأجّله لآخر لحظة ممكنة عشان ما يوقف الأغنية الشغالة */
+/* --- preloader v2.1: load early, warm up close to the mix moment ---
+   قفل صارم: قرار تحميل واحد في نفس الوقت، وما نعيد تحميل الديك
+   إلا إذا الهدف تغيّر فعلاً — يمنع الأغاني تدخل في بعض */
 let preloadBusy = false;
+let inFlightUrl = null;   // الرابط اللي قاعد ينحمّل حالياً
 function getLead(){
   return Math.max(10, Math.min(60, +document.getElementById('leadSec').value || 30));
 }
@@ -1211,6 +1213,13 @@ async function preloadNext(){
   if(!next) return;
   const nextUrl = queues[next.srcDeck][next.idx].url;
 
+  // القرار الحالي هو نفسه اللي محمّل أو قاعد ينحمّل؟ لا تلمسين شي
+  if(idleSt.preloadedUrl === nextUrl || inFlightUrl === nextUrl) {
+    // مكتمل التحميل؟ كمّلي لمرحلة التسخين تحت
+  } else if(inFlightUrl !== null){
+    return; // فيه تحميل شغال لهدف ثاني — انتظري يخلص، لا تقاطعينه
+  }
+
   const actSt = decks[act];
   const remaining = actSt.duration ? (actSt.duration - actSt.current) : Infinity;
   const lead = getLead();
@@ -1219,12 +1228,17 @@ async function preloadNext(){
   try{
     /* phase 1: silent load (safe — no playback, no account conflict) */
     if(idleSt.preloadedUrl !== nextUrl){
+      inFlightUrl = nextUrl;
       const ok = loadDeck(idle, nextUrl, next.srcDeck===idle ? next.idx : undefined, {silent:true, srcDeck:next.srcDeck});
-      if(!ok) return;
+      if(!ok){ inFlightUrl = null; return; }
       decks[idle].srcQueueIdx = next.idx;
-      const ready = await waitReady(idle, 12000);
+      const ready = await waitReady(idle, 15000);
+      inFlightUrl = null;
+      // المستخدمة حمّلت شي ثاني فوقه؟ انسحبي بهدوء
+      if(decks[idle].lastUrl !== nextUrl) return;
       if(!ready){ setStatus('الأغنية الجاية ثقيلة بالتحميل — بحاول من جديد'); return; }
       idleSt.preloadedUrl = nextUrl;
+      idleSt.warmFails = 0;
       setStatus('الجاية محمّلة 📦 — بسخّنها قبل الدمج مباشرة');
       return;
     }
@@ -1239,13 +1253,21 @@ async function preloadNext(){
       cmd(idle,'seekTo',[0,true]);
       if(started){
         idleSt.standby = true;
+        idleSt.warmFails = 0;
         setStandbyUI(idle,true);
         setPlayUI(idle,false);
         if(automix) setStatus('الجاية جاهزة بالانتظار في الديك '+idle+' ✅');
       } else {
-        decks[next.srcDeck].queueIndex = next.idx;
-        idleSt.preloadedUrl = null;
-        setStatus('أغنية ما قبلت تشتغل — بجهّز اللي بعدها');
+        idleSt.warmFails = (idleSt.warmFails||0)+1;
+        if(idleSt.warmFails < 2){
+          // نعيد المحاولة على نفس الأغنية بدل ما نقلب الأغاني
+          setStatus('التسخين تعثّر — بحاول مرة ثانية على نفس الأغنية');
+        } else {
+          decks[next.srcDeck].queueIndex = next.idx;
+          idleSt.preloadedUrl = null;
+          idleSt.warmFails = 0;
+          setStatus('أغنية ما قبلت تشتغل بعد محاولتين — بجهّز اللي بعدها');
+        }
       }
     }
   } finally {
