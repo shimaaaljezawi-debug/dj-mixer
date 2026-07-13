@@ -63,7 +63,7 @@
     align-items:start;
   }
   .col{display:flex;flex-direction:column;gap:14px}
-  .deck,.mixer,.dqueue,.trending{
+  .deck,.mixer,.dqueue{
     background:var(--panel);
     border:1px solid var(--line);
     border-radius:18px;
@@ -292,38 +292,96 @@
   .q-btns .del:hover{color:#ff7070;border-color:#ff7070}
   .q-empty{text-align:center;color:var(--muted);font-size:12px;padding:12px 0}
 
-  /* Trending */
-  .trending{
+  /* Library */
+  .library{
     max-width:1260px;margin:18px auto 0;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:18px;
+    direction:rtl;
     border-top:3px solid;
     border-image:linear-gradient(90deg,var(--a),var(--auto),var(--b)) 1;
   }
-  .trending h2{
+  .library h2{
     font-size:18px;font-weight:800;margin-bottom:4px;
     background:linear-gradient(90deg,var(--a),var(--auto));
     -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
     display:inline-block;
   }
-  .trending .sub{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.8}
-  .t-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:8px}
-  .t-item{
-    display:flex;align-items:center;gap:10px;
-    background:var(--panel2);border:1px solid var(--line);
-    border-radius:12px;padding:10px 12px;
+  .library .sub{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.8}
+  .lib-new{display:flex;gap:8px;margin-bottom:14px}
+  .lib-new input{
+    flex:1;background:var(--panel2);border:1px solid var(--line);
+    border-radius:10px;padding:11px 12px;color:var(--text);font-size:13px;min-width:0;
   }
-  .t-fire{font-size:18px;flex-shrink:0}
-  .t-info{flex:1;min-width:0}
-  .t-name{font-size:13px;font-weight:700;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .t-meta{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .t-btns{display:flex;gap:5px;flex-shrink:0}
-  .t-btns button{
-    border-radius:7px;border:1px solid var(--line);background:var(--bg);
+  .lib-new input::placeholder{color:var(--muted)}
+  .lib-new button{
+    background:linear-gradient(90deg,var(--a-dim),var(--auto-dim));
+    border:1px solid var(--line);color:var(--text);
+    border-radius:10px;padding:0 20px;font-size:13px;font-weight:700;
+    cursor:pointer;font-family:inherit;white-space:nowrap;
+  }
+  .lib-new button:hover{border-color:var(--auto)}
+  .lib-files{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+  .lib-file{
+    display:flex;align-items:center;gap:8px;
+    background:var(--panel2);border:1px solid var(--line);
+    border-radius:99px;padding:8px 14px;cursor:pointer;
+    font-size:13px;font-weight:700;transition:.15s;
+  }
+  .lib-file:hover{border-color:var(--muted)}
+  .lib-file.open{
+    background:var(--auto-dim);border-color:var(--auto);color:var(--auto);
+    box-shadow:0 0 16px -4px var(--auto-glow);
+  }
+  .lib-file .count{
+    font-size:11px;background:var(--bg);color:var(--muted);
+    border-radius:99px;padding:1px 8px;
+  }
+  .lib-file.open .count{color:var(--auto)}
+  .lib-file .fdel{
+    color:var(--muted);font-size:12px;font-weight:800;cursor:pointer;
+    padding:0 2px;
+  }
+  .lib-file .fdel:hover{color:#ff7070}
+  .lib-empty{text-align:center;color:var(--muted);font-size:13px;padding:14px 0}
+  .lib-open{
+    background:var(--panel2);border:1px solid var(--line);
+    border-radius:14px;padding:14px;display:none;
+  }
+  .lib-open.show{display:block}
+  .lib-open h3{font-size:14px;font-weight:800;margin-bottom:10px;color:var(--auto)}
+  .lib-add{display:flex;gap:8px;margin-bottom:10px}
+  .lib-add input{
+    flex:1;background:var(--bg);border:1px solid var(--line);
+    border-radius:10px;padding:10px 12px;color:var(--text);font-size:12px;
+    direction:ltr;text-align:left;min-width:0;
+  }
+  .lib-add input::placeholder{color:var(--muted);direction:rtl;text-align:right}
+  .lib-add button{
+    background:var(--bg);border:1px solid var(--line);color:var(--text);
+    border-radius:10px;padding:0 16px;font-size:12px;font-weight:700;
+    cursor:pointer;font-family:inherit;white-space:nowrap;
+  }
+  .lib-add button:hover{border-color:var(--auto);color:var(--auto)}
+  .lib-songs{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:8px}
+  .lib-song{
+    display:flex;align-items:center;gap:8px;
+    background:var(--bg);border:1px solid var(--line);
+    border-radius:10px;padding:8px 10px;
+  }
+  .lib-song .s-title{flex:1;font-size:12px;font-weight:600;line-height:1.4;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .lib-song .s-btns{display:flex;gap:5px;flex-shrink:0}
+  .lib-song .s-btns button{
+    border-radius:7px;border:1px solid var(--line);background:var(--panel2);
     color:var(--text);font-size:11px;font-weight:800;cursor:pointer;
     font-family:inherit;padding:6px 9px;transition:.15s;
   }
-  .t-btns .ta:hover{background:var(--a);color:#2b0518;border-color:var(--a)}
-  .t-btns .tb:hover{background:var(--b);color:#1a2405;border-color:var(--b)}
-  .t-btns .ts:hover{background:var(--auto);color:#04232b;border-color:var(--auto)}
+  .lib-song .s-btns .sa:hover{background:var(--a);color:#2b0518;border-color:var(--a)}
+  .lib-song .s-btns .sb:hover{background:var(--b);color:#1a2405;border-color:var(--b)}
+  .lib-song .s-btns .sdel{color:var(--muted)}
+  .lib-song .s-btns .sdel:hover{color:#ff7070;border-color:#ff7070}
 
   .note{
     max-width:1260px;margin:16px auto 0;background:var(--panel);
@@ -499,13 +557,25 @@
 
 </div>
 
-<!-- TOP TRENDING -->
-<section class="trending">
-  <h2>🔥 Top Trending — ترندات تيك توك الحين</h2>
+<!-- LIBRARY -->
+<section class="library">
+  <h2>📚 المكتبة — ملفات المناسبات</h2>
   <p class="sub">
-    مجهزة لك مسبقاً (محدثة يوليو 2026 — عربي وعالمي). الأزرار: <b style="color:var(--a)">▶A</b> / <b style="color:var(--b)">▶B</b> تشغيل فوري في الديك، <b>+A</b> / <b>+B</b> إضافة للقائمة عشان الأوتو مكس، و <b style="color:var(--auto)">🔍</b> يفتح يوتيوب — انسخي رابط أول نتيجة والصقيه.
+    سوّي ملف لكل مناسبة (زواج، سهرة، عيد ميلاد...) وعبّيه بأغانيه. تفتحين الملف وقت المناسبة وترسلين أغانيه للديكات مباشرة، أو تعبين منها القائمتين للأوتو مكس. كل شي محفوظ دائم.
   </p>
-  <div class="t-list" id="tList"></div>
+  <div class="lib-new">
+    <input type="text" id="libName" placeholder="اسم الملف الجديد... (مثلاً: سهرة البنات 🎉)" onkeydown="if(event.key==='Enter')createFile()">
+    <button onclick="createFile()">📁 إنشاء ملف</button>
+  </div>
+  <div class="lib-files" id="libFiles"></div>
+  <div class="lib-open" id="libOpen">
+    <h3 id="libOpenTitle"></h3>
+    <div class="lib-add">
+      <input type="text" id="libUrl" placeholder="الصقي رابط أغنية لهذا الملف..." onkeydown="if(event.key==='Enter')addSongToFile()">
+      <button onclick="addSongToFile()">+ إضافة</button>
+    </div>
+    <div class="lib-songs" id="libSongs"></div>
+  </div>
 </section>
 
 <p class="note">
@@ -513,7 +583,8 @@
   <b>Auto-Mix الجديد:</b> أول ما تشتغل أغنية، الميكسر يجهّز الجاية بصمت في الديك الثاني (بتشوفين شارة «جاهزة بالانتظار») — ولحظة الدمج يشغّلها ويسحب الكروس بنعومة. ولو أغنية رفضت تشتغل، <b>ما يسحب الكروس على ديك صامت أبداً</b> — يخليك على أغنيتك ويكتب لك وش صار.
   <b>⚡ الستتر:</b> اضغطي ورا بعض بإيقاعك = تأتأة الديجيز.
   <b>🔄 الإنعاش:</b> ديك علّق؟ اضغطيه — يعيد هذا الديك بس ويرجع لمكانه.
-  الترندات تتغير بسرعة — القائمة فوق صورة من هالفترة، وأي وقت تبغين تحديثها قوليلي.
+  <b>📚 المكتبة:</b> جهّزي ملف كل مناسبة قبلها بأيام وأنتي مرتاحة، ويوم الحفلة كل شي بضغطة.
+  <b>⭐ نصيحة ذهبية للمكس:</b> خذي روابطك من يوتيوب العادي (مو يوتيوب ميوزك) وسكّري يوتيوب ميوزك من كل أجهزتك وقت الحفلة — حسابك ما يتحسس والأغاني ما توقف. ولو وقّف يوتيوب أغنية فجأة، الميكسر يرجّعها لك تلقائياً.
 </p>
 
 <script>
@@ -549,6 +620,9 @@ function loadDeck(d, directUrl, queueIndex, opts){
   st.standby = false;
   st.preloadedUrl = null;
   st.srcDeck = opts.srcDeck || null;
+  st.userPaused = false;
+  st.rescueCount = 0;
+  st.pausedUnexpectedly = 0;
   setStandbyUI(d,false);
   clearLoopState(d);
   setPlayUI(d,false);
@@ -638,7 +712,13 @@ window.addEventListener('message', (e)=>{
     if(typeof info.duration === 'number' && info.duration>0) st.duration = info.duration;
     if(typeof info.currentTime === 'number') st.current = info.currentTime;
     if(typeof info.playerState === 'number'){
+      const wasPlaying = st.playing;
       st.playing = (info.playerState === 1);
+      if(st.playing){ st.pausedUnexpectedly = 0; }
+      // paused (state 2) without the user asking for it → probably YouTube forced it
+      if(wasPlaying && info.playerState === 2 && !st.userPaused && !st.standby){
+        st.pausedUnexpectedly = Date.now();
+      }
       if(!st.standby) setPlayUI(d, st.playing);
       if(info.playerState === 0){
         st.playing=false; setPlayUI(d,false);
@@ -663,8 +743,8 @@ function togglePlay(d){
     cmd(d,'playVideo');
     return;
   }
-  if(st.playing){ cmd(d,'pauseVideo'); }
-  else { applyVolumes(); cmd(d,'playVideo'); }
+  if(st.playing){ st.userPaused = true; cmd(d,'pauseVideo'); }
+  else { st.userPaused = false; applyVolumes(); cmd(d,'playVideo'); }
 }
 function restartDeck(d){
   if(!decks[d].iframe) return;
@@ -930,47 +1010,141 @@ function manualQueueLoad(d,i){
   queues[d].forEach(item=>{ if(item.title && item.title.startsWith('أغنية ')) fetchTitle(item); });
 });
 
-/* ---------- Top Trending (يوليو 2026) ---------- */
-const trending = [
-  {t:'Dai Dai — أغنية كأس العالم', a:'Shakira & Burna Boy', id:'fcnDmrtj6Sk', tag:'🌍 أكبر ترند عالمي الحين'},
-  {t:'How You Like Me Now?', a:'The Heavy', id:'sVzvRsl4rEM', tag:'🌍 ترند لحظات "قلتلك"'},
-  {t:'Cheerleader (Remix)', a:'OMI', id:'jGflUbPQfW8', tag:'🌍 رقصة تيك توك السهلة'},
-  {t:'ياي سحر عيونه', a:'نانسي عجرم', id:'HnTWkN79PCo', tag:'🇱🇧 راجعة ترند بقوة'},
-  {t:'طنش تعش تنتعش', a:'ترند الطنش', id:'GPyrTYqCDY8', tag:'🇪🇬 ترند الصيف'},
-  {t:'Self Aware', a:'Temper City', q:'Temper City Self Aware', tag:'🌍 "God, you look so pretty"'},
-  {t:'PRESSURE!', a:'Nyck Caution', q:'Nyck Caution PRESSURE song', tag:'🌍 للحظات الحماسية'},
-  {t:'Melisa I\'m Drunk And Outside', a:'Afroplugs', q:'Afroplugs Melisa Im drunk and outside', tag:'🌍 الترند الكوميدي'},
-  {t:'Big Boom In The Room', a:'Abraao de Santana', q:'Big Boom In The Room Abraao de Santana', tag:'🌍 تكنو — للكشف الكبير'},
-  {t:'أي حاجة تيجي على بالك', a:'مسلم', q:'مسلم اي حاجة تيجي على بالك', tag:'🇪🇬 الرومانسي الترند'},
-  {t:'شتت شتت — ترند الدهابة', a:'خنساء المعمورة', q:'خنساء المعمورة شتت شتت الدهابه', tag:'🇮🇶 ترند صاعد'}
-];
+/* ---------- Library 📚 ---------- */
+let library = {files:[], openIdx:null};
+try{
+  const savedLib = localStorage.getItem('djLibrary');
+  if(savedLib) library = JSON.parse(savedLib);
+}catch(_){}
+if(!library.files) library.files=[];
 
-function renderTrending(){
-  const box = document.getElementById('tList');
-  box.innerHTML = '';
-  trending.forEach((s,i)=>{
+function saveLibrary(){
+  try{ localStorage.setItem('djLibrary', JSON.stringify(library)); }catch(_){}
+}
+
+function createFile(){
+  const input = document.getElementById('libName');
+  const name = input.value.trim();
+  if(!name){ alert('اكتبي اسم للملف أول 🙂'); return; }
+  if(library.files.some(f=>f.name===name)){ alert('فيه ملف بنفس الاسم — اختاري اسم ثاني'); return; }
+  library.files.push({name:name, songs:[]});
+  library.openIdx = library.files.length-1;
+  input.value='';
+  saveLibrary();
+  renderLibrary();
+}
+
+function openFile(i){
+  library.openIdx = (library.openIdx===i) ? null : i;
+  saveLibrary();
+  renderLibrary();
+}
+
+function deleteFile(i, ev){
+  ev.stopPropagation();
+  const f = library.files[i];
+  if(!confirm('متأكدة تحذفين ملف «'+f.name+'» بكل أغانيه ('+f.songs.length+')؟')) return;
+  library.files.splice(i,1);
+  if(library.openIdx===i) library.openIdx=null;
+  else if(library.openIdx>i) library.openIdx--;
+  saveLibrary();
+  renderLibrary();
+}
+
+function addSongToFile(){
+  if(library.openIdx===null) return;
+  const input = document.getElementById('libUrl');
+  const url = input.value.trim();
+  const id = extractId(url);
+  if(!id){ alert('الرابط مو واضح 🙈 تأكدي إنه رابط أغنية (مو playlist) من يوتيوب أو يوتيوب ميوزك'); return; }
+  const item = {id:id, url:'https://www.youtube.com/watch?v='+id, title:'أغنية '+id};
+  library.files[library.openIdx].songs.push(item);
+  input.value='';
+  saveLibrary();
+  renderLibrary();
+  fetchLibTitle(item);
+}
+
+function fetchLibTitle(item){
+  fetch('https://noembed.com/embed?url='+encodeURIComponent(item.url))
+    .then(r=>r.json())
+    .then(j=>{
+      if(j && j.title){
+        item.title = j.title;
+        saveLibrary();
+        renderLibrary();
+      }
+    }).catch(_=>{});
+}
+
+function removeSongFromFile(fi, si){
+  library.files[fi].songs.splice(si,1);
+  saveLibrary();
+  renderLibrary();
+}
+
+function libLoad(d, fi, si){
+  loadDeck(d, library.files[fi].songs[si].url);
+}
+function libToQueue(d, fi, si){
+  const s = library.files[fi].songs[si];
+  addToQueue(d, s.url, s.title);
+}
+
+function renderLibrary(){
+  const filesBox = document.getElementById('libFiles');
+  const openBox = document.getElementById('libOpen');
+  filesBox.innerHTML = '';
+  if(!library.files.length){
+    filesBox.innerHTML = '<div class="lib-empty">ما فيه ملفات بعد — سوّي أول ملف لمناسبتك الجاية 📁✨</div>';
+    openBox.classList.remove('show');
+    return;
+  }
+  library.files.forEach((f,i)=>{
+    const chip = document.createElement('div');
+    chip.className = 'lib-file' + (library.openIdx===i ? ' open' : '');
+    chip.onclick = ()=>openFile(i);
+    chip.innerHTML =
+      '<span class="fname"></span>'+
+      '<span class="count">'+f.songs.length+'</span>'+
+      '<span class="fdel" title="حذف الملف">✕</span>';
+    chip.querySelector('.fname').textContent = '📁 '+f.name;
+    chip.querySelector('.fdel').onclick = (ev)=>deleteFile(i,ev);
+    filesBox.appendChild(chip);
+  });
+
+  if(library.openIdx===null || !library.files[library.openIdx]){
+    openBox.classList.remove('show');
+    return;
+  }
+  openBox.classList.add('show');
+  const f = library.files[library.openIdx];
+  document.getElementById('libOpenTitle').textContent = '📁 '+f.name+' — '+f.songs.length+' أغنية';
+  const songsBox = document.getElementById('libSongs');
+  songsBox.innerHTML = '';
+  if(!f.songs.length){
+    songsBox.innerHTML = '<div class="lib-empty">الملف فاضي — الصقي روابط أغانيه فوق 🎶</div>';
+    return;
+  }
+  f.songs.forEach((s,si)=>{
     const row = document.createElement('div');
-    row.className = 't-item';
-    let btns;
-    if(s.id){
-      const u = "'https://www.youtube.com/watch?v="+s.id+"'";
-      btns =
-        '<button class="ta" onclick="loadDeck(\'A\','+u+')">▶A</button>'+
-        '<button class="tb" onclick="loadDeck(\'B\','+u+')">▶B</button>'+
-        '<button class="ta" onclick="addToQueue(\'A\','+u+', trending['+i+'].t+\' — \'+trending['+i+'].a)">+A</button>'+
-        '<button class="tb" onclick="addToQueue(\'B\','+u+', trending['+i+'].t+\' — \'+trending['+i+'].a)">+B</button>';
-    } else {
-      btns = '<button class="ts" onclick="window.open(\'https://www.youtube.com/results?search_query='+encodeURIComponent(s.q)+'\',\'_blank\')">🔍 دوّريها</button>';
-    }
+    row.className = 'lib-song';
     row.innerHTML =
-      '<span class="t-fire">🔥</span>'+
-      '<span class="t-info"><div class="t-name"></div><div class="t-meta"></div></span>'+
-      '<span class="t-btns">'+btns+'</span>';
-    row.querySelector('.t-name').textContent = s.t + ' — ' + s.a;
-    row.querySelector('.t-meta').textContent = s.tag;
-    box.appendChild(row);
+      '<span class="s-title"></span>'+
+      '<span class="s-btns">'+
+        '<button class="sa" onclick="libLoad(\'A\','+library.openIdx+','+si+')">▶A</button>'+
+        '<button class="sb" onclick="libLoad(\'B\','+library.openIdx+','+si+')">▶B</button>'+
+        '<button class="sa" onclick="libToQueue(\'A\','+library.openIdx+','+si+')">+A</button>'+
+        '<button class="sb" onclick="libToQueue(\'B\','+library.openIdx+','+si+')">+B</button>'+
+        '<button class="sdel" onclick="removeSongFromFile('+library.openIdx+','+si+')">✕</button>'+
+      '</span>';
+    row.querySelector('.s-title').textContent = s.title;
+    songsBox.appendChild(row);
   });
 }
+
+/* refresh unresolved titles */
+library.files.forEach(f=>f.songs.forEach(s=>{ if(s.title && s.title.startsWith('أغنية ')) fetchLibTitle(s); }));
 
 /* ---------- Auto-Mix v2: preload + safety net ---------- */
 let automix = false;
@@ -1019,45 +1193,82 @@ function activeDeck(){
   return null;
 }
 
-/* --- preloader: keeps the idle deck warmed up with the next track --- */
+/* --- preloader v2: load early, warm up ONLY close to the mix moment --- */
+/* التحميل المبكر ما يزعج حساب يوتيوب، التسخين (تشغيل مكتوم) هو اللي ممكن —
+   فنأجّله لآخر لحظة ممكنة عشان ما يوقف الأغنية الشغالة */
+let preloadBusy = false;
+function getLead(){
+  return Math.max(10, Math.min(60, +document.getElementById('leadSec').value || 30));
+}
 async function preloadNext(){
-  if(!automix || transitioning) return;
+  if(!automix || transitioning || preloadBusy) return;
   const act = activeDeck();
   if(!act) return;
   const idle = act==='A' ? 'B' : 'A';
   const idleSt = decks[idle];
-  if(idleSt.playing && !idleSt.standby) return; // idle deck is actually in use — don't touch
+  if(idleSt.playing && !idleSt.standby) return; // idle deck actually in use
   const next = pickNext(act);
   if(!next) return;
   const nextUrl = queues[next.srcDeck][next.idx].url;
-  if(idleSt.standby && idleSt.preloadedUrl===nextUrl) return; // already warmed with right track
 
-  // load silently and warm up
-  const ok = loadDeck(idle, nextUrl, next.srcDeck===idle ? next.idx : undefined, {silent:true, srcDeck:next.srcDeck});
-  if(!ok) return;
-  decks[idle].srcQueueIdx = next.idx;
-  const ready = await waitReady(idle, 12000);
-  if(!ready){ setStatus('الأغنية الجاية ثقيلة بالتحميل — بحاول من جديد'); return; }
-  // warm-up: muted play then pause at 0
-  cmd(idle,'mute');
-  cmd(idle,'setVolume',[0]);
-  cmd(idle,'playVideo');
-  const started = await waitPlaying(idle, 4000);
-  cmd(idle,'pauseVideo');
-  cmd(idle,'seekTo',[0,true]);
-  if(started){
-    decks[idle].standby = true;
-    decks[idle].preloadedUrl = nextUrl;
-    setStandbyUI(idle,true);
-    setPlayUI(idle,false);
-    if(automix) setStatus('الجاية جاهزة بالانتظار في الديك '+idle+' ✅');
-  } else {
-    // couldn't warm it (blocked video?) — advance pointer so next attempt tries the following song
-    decks[next.srcDeck].queueIndex = next.idx;
-    setStatus('أغنية ما قبلت تشتغل — بجهّز اللي بعدها');
+  const actSt = decks[act];
+  const remaining = actSt.duration ? (actSt.duration - actSt.current) : Infinity;
+  const lead = getLead();
+
+  preloadBusy = true;
+  try{
+    /* phase 1: silent load (safe — no playback, no account conflict) */
+    if(idleSt.preloadedUrl !== nextUrl){
+      const ok = loadDeck(idle, nextUrl, next.srcDeck===idle ? next.idx : undefined, {silent:true, srcDeck:next.srcDeck});
+      if(!ok) return;
+      decks[idle].srcQueueIdx = next.idx;
+      const ready = await waitReady(idle, 12000);
+      if(!ready){ setStatus('الأغنية الجاية ثقيلة بالتحميل — بحاول من جديد'); return; }
+      idleSt.preloadedUrl = nextUrl;
+      setStatus('الجاية محمّلة 📦 — بسخّنها قبل الدمج مباشرة');
+      return;
+    }
+
+    /* phase 2: warm-up — only inside the final window before the mix */
+    if(!idleSt.standby && idleSt.ready && remaining <= lead + 15){
+      cmd(idle,'mute');
+      cmd(idle,'setVolume',[0]);
+      cmd(idle,'playVideo');
+      const started = await waitPlaying(idle, 4000);
+      cmd(idle,'pauseVideo');
+      cmd(idle,'seekTo',[0,true]);
+      if(started){
+        idleSt.standby = true;
+        setStandbyUI(idle,true);
+        setPlayUI(idle,false);
+        if(automix) setStatus('الجاية جاهزة بالانتظار في الديك '+idle+' ✅');
+      } else {
+        decks[next.srcDeck].queueIndex = next.idx;
+        idleSt.preloadedUrl = null;
+        setStatus('أغنية ما قبلت تشتغل — بجهّز اللي بعدها');
+      }
+    }
+  } finally {
+    preloadBusy = false;
   }
 }
 setInterval(preloadNext, 2000);
+
+/* --- rescue monitor: if YouTube force-pauses the live track, bring it back --- */
+setInterval(()=>{
+  if(!automix || transitioning) return;
+  ['A','B'].forEach(d=>{
+    const st = decks[d];
+    if(st.pausedUnexpectedly && !st.standby && !st.userPaused &&
+       (st.rescueCount||0) < 2 && Date.now()-st.pausedUnexpectedly > 1500){
+      st.rescueCount = (st.rescueCount||0)+1;
+      st.pausedUnexpectedly = 0;
+      applyVolumes();
+      cmd(d,'playVideo');
+      setStatus('يوتيوب وقّف الأغنية — رجّعتها لك ▶');
+    }
+  });
+}, 1000);
 
 /* --- transition watcher --- */
 setInterval(()=>{
@@ -1169,7 +1380,7 @@ async function onTrackEnded(d){
 }
 
 renderQueues();
-renderTrending();
+renderLibrary();
 applyVolumes();
 </script>
 </body>
