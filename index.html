@@ -125,11 +125,18 @@
   }
 
   .viz{
+    position:relative;
     display:flex;align-items:flex-end;justify-content:center;gap:3px;
     height:46px;padding:4px 2px;
     background:var(--panel2);border:1px solid var(--line);border-radius:10px;
     overflow:hidden;
   }
+  .wavecanvas{
+    position:absolute;inset:0;width:100%;height:100%;
+    display:none;border-radius:10px;background:var(--panel2);cursor:pointer;z-index:2;
+  }
+  .fxrow.off{opacity:.35;pointer-events:none}
+  .fxrow .eqs{flex:1;min-width:0}
   .viz span{
     flex:1;max-width:10px;height:8%;border-radius:3px 3px 0 0;
     transition:height .12s ease;opacity:.95;
@@ -311,6 +318,20 @@
     display:inline-block;
   }
   .library .sub{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.8}
+  .lib-search{margin-bottom:14px}
+  .lib-search input{
+    width:100%;background:var(--panel2);border:1px solid var(--line);
+    border-radius:12px;padding:13px 14px;color:var(--text);font-size:14px;
+  }
+  .lib-search input::placeholder{color:var(--muted)}
+  .lib-search input:focus{outline:none;border-color:var(--auto);box-shadow:0 0 14px -4px var(--auto-glow)}
+  #libSearchResults{margin-bottom:14px}
+  .s-file{
+    flex-shrink:0;font-size:10px;color:var(--muted);
+    background:var(--bg);border:1px solid var(--line);
+    border-radius:99px;padding:3px 9px;max-width:130px;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
   .lib-new{display:flex;gap:8px;margin-bottom:14px}
   .lib-new input{
     flex:1;background:var(--panel2);border:1px solid var(--line);
@@ -423,11 +444,12 @@
     <div class="loadrow">
       <input type="text" id="urlA" placeholder="الصقي رابط اليوتيوب هنا...">
       <button onclick="loadDeck('A')">تحميل</button>
+      <button onclick="document.getElementById('pickA').click()" title="شغّلي ملف MP3 من جهازك — بدون توقف وبدون إعلانات">📂</button>
     </div>
     <div class="video-wrap" id="wrapA">
       <div class="video-empty">ما فيه أغنية بعد — الصقي رابط فوق أو من قائمة A تحت</div>
     </div>
-    <div class="viz" id="vizA"></div>
+    <div class="viz" id="vizA"><canvas class="wavecanvas" id="waveA"></canvas></div>
     <div>
       <div class="track-title" id="titleA"></div>
       <div class="track-artist" id="artistA"></div>
@@ -452,6 +474,14 @@
       <button id="loopInA" onclick="loopIn('A')">بداية</button>
       <button id="loopOutA" onclick="loopOut('A')">نهاية + تكرار</button>
       <button onclick="loopOff('A')">إيقاف</button>
+    </div>
+    <div class="fxrow off" id="eqRowA" title="EQ والفلتر الحقيقيين — للملفات المحلية 💾">
+      <span class="lbl">🎚 EQ:</span>
+      <input type="range" class="eqs" id="lowA" min="-12" max="12" value="0" step="1" oninput="applyEQ('A')" title="Low — الباص">
+      <input type="range" class="eqs" id="midA" min="-12" max="12" value="0" step="1" oninput="applyEQ('A')" title="Mid — الأصوات">
+      <input type="range" class="eqs" id="highA" min="-12" max="12" value="0" step="1" oninput="applyEQ('A')" title="High — الحدة">
+      <input type="range" class="eqs" id="filtA" min="-100" max="100" value="0" step="1" oninput="applyEQ('A')" title="الفلتر: يسار يغرق الصوت، يمين يرفعه">
+      <button onclick="resetEQ('A')" style="flex:0 0 auto;padding:6px 10px">↺</button>
     </div>
     <div class="volrow">
       <span class="lbl">الفوليوم</span>
@@ -508,11 +538,12 @@
     <div class="loadrow">
       <input type="text" id="urlB" placeholder="الصقي رابط اليوتيوب هنا...">
       <button onclick="loadDeck('B')">تحميل</button>
+      <button onclick="document.getElementById('pickB').click()" title="شغّلي ملف MP3 من جهازك — بدون توقف وبدون إعلانات">📂</button>
     </div>
     <div class="video-wrap" id="wrapB">
       <div class="video-empty">ما فيه أغنية بعد — الصقي رابط فوق أو من قائمة B تحت</div>
     </div>
-    <div class="viz" id="vizB"></div>
+    <div class="viz" id="vizB"><canvas class="wavecanvas" id="waveB"></canvas></div>
     <div>
       <div class="track-title" id="titleB"></div>
       <div class="track-artist" id="artistB"></div>
@@ -538,6 +569,14 @@
       <button id="loopOutB" onclick="loopOut('B')">نهاية + تكرار</button>
       <button onclick="loopOff('B')">إيقاف</button>
     </div>
+    <div class="fxrow off" id="eqRowB" title="EQ والفلتر الحقيقيين — للملفات المحلية 💾">
+      <span class="lbl">🎚 EQ:</span>
+      <input type="range" class="eqs" id="lowB" min="-12" max="12" value="0" step="1" oninput="applyEQ('B')" title="Low — الباص">
+      <input type="range" class="eqs" id="midB" min="-12" max="12" value="0" step="1" oninput="applyEQ('B')" title="Mid — الأصوات">
+      <input type="range" class="eqs" id="highB" min="-12" max="12" value="0" step="1" oninput="applyEQ('B')" title="High — الحدة">
+      <input type="range" class="eqs" id="filtB" min="-100" max="100" value="0" step="1" oninput="applyEQ('B')" title="الفلتر: يسار يغرق الصوت، يمين يرفعه">
+      <button onclick="resetEQ('B')" style="flex:0 0 auto;padding:6px 10px">↺</button>
+    </div>
     <div class="volrow">
       <span class="lbl">الفوليوم</span>
       <input type="range" class="vol" id="volB" min="0" max="100" value="90" oninput="applyVolumes()">
@@ -562,8 +601,12 @@
 <section class="library">
   <h2>📚 المكتبة — ملفات المناسبات</h2>
   <p class="sub">
-    سوّي ملف لكل مناسبة (زواج، سهرة، عيد ميلاد...) وعبّيه بأغانيه. تفتحين الملف وقت المناسبة وترسلين أغانيه للديكات مباشرة، أو تعبين منها القائمتين للأوتو مكس. كل شي محفوظ دائم.
+    سوّي ملف لكل مناسبة وعبّيه بأغانيه — روابط يوتيوب أو <b>ملفات MP3 من جهازك 💾</b> (زر «ملفات من جهازي»). الملفات المحلية تنحفظ داخل المتصفح للأبد وتشتغل <b>بدون توقف وبدون إعلانات وبدون إنترنت</b>، ومعها EQ وفلتر وWaveform حقيقيين.
   </p>
+  <div class="lib-search">
+    <input type="text" id="libSearch" placeholder="🔍 ابحثي باسم الأغنية في كل مكتبتك... والنتيجة ترسلينها للديك بضغطة" oninput="searchLibrary()">
+  </div>
+  <div class="lib-songs" id="libSearchResults"></div>
   <div class="lib-new">
     <input type="text" id="libName" placeholder="اسم الملف الجديد... (مثلاً: سهرة البنات 🎉)" onkeydown="if(event.key==='Enter')createFile()">
     <button onclick="createFile()">📁 إنشاء ملف</button>
@@ -573,7 +616,8 @@
     <h3 id="libOpenTitle"></h3>
     <div class="lib-add">
       <input type="text" id="libUrl" placeholder="الصقي رابط أغنية لهذا الملف..." onkeydown="if(event.key==='Enter')addSongToFile()">
-      <button onclick="addSongToFile()">+ إضافة</button>
+      <button onclick="addSongToFile()">+ إضافة رابط</button>
+      <button onclick="document.getElementById('libFileInput').click()">📂 ملفات من جهازي</button>
     </div>
     <div class="lib-songs" id="libSongs"></div>
   </div>
@@ -585,17 +629,23 @@
   <b>⚡ الستتر:</b> اضغطي ورا بعض بإيقاعك = تأتأة الديجيز.
   <b>🔄 الإنعاش:</b> ديك علّق؟ اضغطيه — يعيد هذا الديك بس ويرجع لمكانه.
   <b>📚 المكتبة:</b> جهّزي ملف كل مناسبة قبلها بأيام وأنتي مرتاحة، ويوم الحفلة كل شي بضغطة.
-  <b>⭐ حارس التشغيل:</b> المشغّلات مربوطة بحسابك (بريميومك شغال = بدون إعلانات)، ولو المتصفح أو يوتيوب وقّف أغنية فجأة لأي سبب، الميكسر يرجّعها تلقائياً خلال ثانية من نفس المكان. ملاحظة صغيرة: لا توقفين الأغنية بالضغط على الفيديو نفسه — استخدمي زر «إيقاف» حقنا، لأن الحارس يعتبر ضغطة الفيديو توقف مفاجئ ويرجّع الأغنية.
+  <b>💾 وضع المحترفين (ملفات محلية):</b> زر 📂 في الديك أو «ملفات من جهازي» في المكتبة — الملف المحلي يشتغل بدون توقف نهائياً، بدون إعلانات، بدون إنترنت، ومعه EQ وفلتر وWaveform حقيقيين (اضغطي على الموجة تتنقلين داخل الأغنية). روابط يوتيوب لسه شغالة زي قبل مع حارس التشغيل اللي يرجّع أي أغنية توقفت فجأة.
 </p>
+
+<input type="file" id="pickA" accept="audio/*" multiple hidden onchange="deckFilePicked('A',this)">
+<input type="file" id="pickB" accept="audio/*" multiple hidden onchange="deckFilePicked('B',this)">
+<input type="file" id="libFileInput" accept="audio/*" multiple hidden onchange="addFilesToLibrary(this.files).then(()=>{this.value=''})">
 
 <script>
 const decks = {
   A: {iframe:null, ready:false, playing:false, duration:0, current:0, listenTimer:null,
       loopIn:null, loopOut:null, loopActive:false, queueIndex:null, lastUrl:null,
-      standby:false, preloadedUrl:null, srcDeck:null},
+      standby:false, preloadedUrl:null, srcDeck:null,
+      source:'yt', audio:null, nodes:null, peaks:null, trackId:null},
   B: {iframe:null, ready:false, playing:false, duration:0, current:0, listenTimer:null,
       loopIn:null, loopOut:null, loopActive:false, queueIndex:null, lastUrl:null,
-      standby:false, preloadedUrl:null, srcDeck:null}
+      standby:false, preloadedUrl:null, srcDeck:null,
+      source:'yt', audio:null, nodes:null, peaks:null, trackId:null}
 };
 
 /* ---------- Deck engine ---------- */
@@ -615,6 +665,9 @@ function loadDeck(d, directUrl, queueIndex, opts){
   if(directUrl && !opts.silent) document.getElementById('url'+d).value = directUrl;
 
   const st = decks[d];
+  stopFileEngine(d);
+  st.source='yt';
+  setEqEnabled(d,false);
   st.ready=false; st.playing=false; st.duration=0; st.current=0;
   st.queueIndex = (typeof queueIndex==='number') ? queueIndex : null;
   st.lastUrl = 'https://www.youtube.com/watch?v='+id;
@@ -650,6 +703,12 @@ function loadDeck(d, directUrl, queueIndex, opts){
 
 function reloadDeck(d){
   const st = decks[d];
+  if(st.source==='file' && st.audio){
+    const at = st.current;
+    seekDeckTo(d, Math.max(0, at-1));
+    playDeck(d);
+    return;
+  }
   if(!st.lastUrl){ alert('ما فيه أغنية محمّلة في هذا الديك 🙂'); return; }
   const wasAt = st.current;
   const qi = st.queueIndex;
@@ -736,30 +795,30 @@ window.addEventListener('message', (e)=>{
 
 function togglePlay(d){
   const st = decks[d];
-  if(!st.iframe){ alert('حمّلي أغنية أول 🙂'); return; }
+  if(!st.iframe && !st.audio){ alert('حمّلي أغنية أول 🙂'); return; }
   if(st.standby){ // user manually starts a standby track
     st.standby=false; setStandbyUI(d,false);
     cmd(d,'unMute');
     applyVolumes();
-    cmd(d,'playVideo');
+    playDeck(d);
     return;
   }
-  if(st.playing){ st.userPaused = true; cmd(d,'pauseVideo'); }
-  else { st.userPaused = false; applyVolumes(); cmd(d,'playVideo'); }
+  if(st.playing){ st.userPaused = true; pauseDeck(d); }
+  else { st.userPaused = false; applyVolumes(); playDeck(d); }
 }
 function restartDeck(d){
-  if(!decks[d].iframe) return;
   const st=decks[d];
+  if(!st.iframe && !st.audio) return;
   if(st.standby){ st.standby=false; setStandbyUI(d,false); cmd(d,'unMute'); applyVolumes(); }
-  cmd(d,'seekTo',[0,true]);
-  cmd(d,'playVideo');
+  seekDeckTo(d,0);
+  playDeck(d);
 }
 function seekDeck(d, ev){
   const st = decks[d];
-  if(!st.iframe || !st.duration) return;
+  if((!st.iframe && !st.audio) || !st.duration) return;
   const bar = ev.currentTarget.getBoundingClientRect();
   const frac = (ev.clientX - bar.left) / bar.width;
-  cmd(d,'seekTo',[Math.max(0, Math.min(1,frac))*st.duration, true]);
+  seekDeckTo(d, Math.max(0, Math.min(1,frac))*st.duration);
 }
 
 function setPlayUI(d, playing){
@@ -788,11 +847,11 @@ function updateProgress(d){
 /* ---------- Stutter ⚡ ---------- */
 function stutter(d, sec, btn){
   const st = decks[d];
-  if(!st.iframe){ alert('حمّلي أغنية أول 🙂'); return; }
+  if(!st.iframe && !st.audio){ alert('حمّلي أغنية أول 🙂'); return; }
   if(st.standby){ togglePlay(d); }
-  else if(!st.playing){ cmd(d,'playVideo'); }
+  else if(!st.playing){ playDeck(d); }
   const back = Math.max(0, st.current - sec);
-  cmd(d,'seekTo',[back,true]);
+  seekDeckTo(d, back);
   st.current = back;
   if(btn){
     btn.classList.add('flash');
@@ -816,6 +875,13 @@ function applyVolumes(){
   cmd('B','setVolume',[decks.B.standby ? 0 : Math.round(volB * gB)]);
   if(!decks.A.standby) cmd('A','unMute');
   if(!decks.B.standby) cmd('B','unMute');
+  // local file decks: real Web Audio gain
+  if(decks.A.source==='file' && decks.A.nodes){
+    decks.A.nodes.gain.gain.value = decks.A.standby ? 0 : (volA/100)*gA;
+  }
+  if(decks.B.source==='file' && decks.B.nodes){
+    decks.B.nodes.gain.gain.value = decks.B.standby ? 0 : (volB/100)*gB;
+  }
 
   const pA = Math.round((1-x)*100), pB = 100-pA;
   document.getElementById('balA').style.width = pA+'%';
@@ -882,7 +948,7 @@ function loopOut(d){
     z.style.left = (st.loopIn/st.duration*100)+'%';
     z.style.width = ((st.loopOut-st.loopIn)/st.duration*100)+'%';
   }
-  cmd(d,'seekTo',[st.loopIn,true]);
+  seekDeckTo(d, st.loopIn);
 }
 function loopOff(d){
   clearLoopState(d);
@@ -892,7 +958,7 @@ setInterval(()=>{
     const st = decks[d];
     if(st.loopActive && st.playing && st.loopOut!==null){
       if(st.current >= st.loopOut - 0.15){
-        cmd(d,'seekTo',[st.loopIn,true]);
+        seekDeckTo(d, st.loopIn);
       }
     }
   });
@@ -906,6 +972,7 @@ const BARS = 28;
 });
 setInterval(()=>{
   ['A','B'].forEach(d=>{
+    if(decks[d].source==='file') return; // real waveform canvas instead
     const bars = document.getElementById('viz'+d).children;
     const playing = decks[d].playing && !decks[d].standby;
     for(let i=0;i<bars.length;i++){
@@ -1004,7 +1071,9 @@ function renderQueues(){
   });
 }
 function manualQueueLoad(d,i){
-  loadDeck(d, queues[d][i].url, i);
+  const it = queues[d][i];
+  if(it.type==='file') loadFileDeck(d, it.trackId, {queueIndex:i});
+  else loadDeck(d, it.url, i);
 }
 
 ['A','B'].forEach(d=>{
@@ -1079,20 +1148,30 @@ function fetchLibTitle(item){
 }
 
 function removeSongFromFile(fi, si){
+  const s = library.files[fi].songs[si];
+  if(s && s.type==='file' && s.trackId){ idbDel(s.trackId).catch(()=>{}); }
   library.files[fi].songs.splice(si,1);
   saveLibrary();
   renderLibrary();
 }
 
 function libLoad(d, fi, si){
-  loadDeck(d, library.files[fi].songs[si].url);
+  const s = library.files[fi].songs[si];
+  if(s.type==='file') loadFileDeck(d, s.trackId);
+  else loadDeck(d, s.url);
 }
 function libToQueue(d, fi, si){
   const s = library.files[fi].songs[si];
-  addToQueue(d, s.url, s.title);
+  if(s.type==='file'){
+    queues[d].push({type:'file', trackId:s.trackId, title:s.title});
+    saveQueues(); renderQueues();
+  } else {
+    addToQueue(d, s.url, s.title);
+  }
 }
 
 function renderLibrary(){
+  try{ if(document.getElementById('libSearch').value) searchLibrary(); }catch(_){}
   const filesBox = document.getElementById('libFiles');
   const openBox = document.getElementById('libOpen');
   filesBox.innerHTML = '';
@@ -1141,6 +1220,40 @@ function renderLibrary(){
       '</span>';
     row.querySelector('.s-title').textContent = s.title;
     songsBox.appendChild(row);
+  });
+}
+
+/* --- بحث المكتبة 🔍 --- */
+function searchLibrary(){
+  const box = document.getElementById('libSearchResults');
+  const q = (document.getElementById('libSearch').value||'').trim().toLowerCase();
+  if(!q){ box.innerHTML=''; return; }
+  const hits = [];
+  library.files.forEach((f,fi)=>{
+    f.songs.forEach((s,si)=>{
+      if((s.title||'').toLowerCase().includes(q)) hits.push({fi:fi, si:si, s:s, fname:f.name});
+    });
+  });
+  if(!hits.length){
+    box.innerHTML = '<div class="lib-empty">ما لقيت «'+q.replace(/</g,'&lt;')+'» في مكتبتك 🔍 — ضيفيها لأحد الملفات أول</div>';
+    return;
+  }
+  box.innerHTML = '';
+  hits.slice(0,25).forEach(h=>{
+    const row = document.createElement('div');
+    row.className = 'lib-song';
+    row.innerHTML =
+      '<span class="s-title"></span>'+
+      '<span class="s-file"></span>'+
+      '<span class="s-btns">'+
+        '<button class="sa" onclick="libLoad(\'A\','+h.fi+','+h.si+')">▶A</button>'+
+        '<button class="sb" onclick="libLoad(\'B\','+h.fi+','+h.si+')">▶B</button>'+
+        '<button class="sa" onclick="libToQueue(\'A\','+h.fi+','+h.si+')">+A</button>'+
+        '<button class="sb" onclick="libToQueue(\'B\','+h.fi+','+h.si+')">+B</button>'+
+      '</span>';
+    row.querySelector('.s-title').textContent = h.s.title;
+    row.querySelector('.s-file').textContent = '📁 '+h.fname;
+    box.appendChild(row);
   });
 }
 
@@ -1211,13 +1324,13 @@ async function preloadNext(){
   if(idleSt.playing && !idleSt.standby) return; // idle deck actually in use
   const next = pickNext(act);
   if(!next) return;
-  const nextUrl = queues[next.srcDeck][next.idx].url;
+  const item = queues[next.srcDeck][next.idx];
+  const key = item.type==='file' ? ('file:'+item.trackId) : item.url;
 
-  // القرار الحالي هو نفسه اللي محمّل أو قاعد ينحمّل؟ لا تلمسين شي
-  if(idleSt.preloadedUrl === nextUrl || inFlightUrl === nextUrl) {
-    // مكتمل التحميل؟ كمّلي لمرحلة التسخين تحت
+  if(idleSt.preloadedUrl === key || inFlightUrl === key) {
+    // نفس الهدف — نكمّل للتسخين تحت لو يحتاج
   } else if(inFlightUrl !== null){
-    return; // فيه تحميل شغال لهدف ثاني — انتظري يخلص، لا تقاطعينه
+    return; // تحميل شغال لهدف ثاني — لا تقاطعينه
   }
 
   const actSt = decks[act];
@@ -1226,24 +1339,44 @@ async function preloadNext(){
 
   preloadBusy = true;
   try{
-    /* phase 1: silent load (safe — no playback, no account conflict) */
-    if(idleSt.preloadedUrl !== nextUrl){
-      inFlightUrl = nextUrl;
-      const ok = loadDeck(idle, nextUrl, next.srcDeck===idle ? next.idx : undefined, {silent:true, srcDeck:next.srcDeck});
+    /* ---- FILE track: instant, silent, zero conflicts ---- */
+    if(item.type==='file'){
+      if(idleSt.preloadedUrl !== key){
+        inFlightUrl = key;
+        const ok = await loadFileDeck(idle, item.trackId, {silent:true, srcDeck:next.srcDeck,
+          queueIndex: next.srcDeck===idle ? next.idx : undefined});
+        inFlightUrl = null;
+        if(!ok) return;
+        decks[idle].srcQueueIdx = next.idx;
+        const ready = await waitReady(idle, 15000);
+        if(!ready || decks[idle].lastUrl!==key) return;
+        idleSt.standby = true;               // ملف محلي = جاهز فوراً بدون تسخين
+        idleSt.preloadedUrl = key;
+        setStandbyUI(idle,true);
+        setPlayUI(idle,false);
+        applyVolumes();
+        if(automix) setStatus('الجاية (ملف محلي) جاهزة بالانتظار في الديك '+idle+' ✅');
+      }
+      return;
+    }
+
+    /* ---- YouTube track: phase 1 silent load ---- */
+    if(idleSt.preloadedUrl !== key){
+      inFlightUrl = key;
+      const ok = loadDeck(idle, key, next.srcDeck===idle ? next.idx : undefined, {silent:true, srcDeck:next.srcDeck});
       if(!ok){ inFlightUrl = null; return; }
       decks[idle].srcQueueIdx = next.idx;
       const ready = await waitReady(idle, 15000);
       inFlightUrl = null;
-      // المستخدمة حمّلت شي ثاني فوقه؟ انسحبي بهدوء
-      if(decks[idle].lastUrl !== nextUrl) return;
+      if(decks[idle].lastUrl !== key) return;
       if(!ready){ setStatus('الأغنية الجاية ثقيلة بالتحميل — بحاول من جديد'); return; }
-      idleSt.preloadedUrl = nextUrl;
+      idleSt.preloadedUrl = key;
       idleSt.warmFails = 0;
       setStatus('الجاية محمّلة 📦 — بسخّنها قبل الدمج مباشرة');
       return;
     }
 
-    /* phase 2: warm-up — only inside the final window before the mix */
+    /* ---- YouTube phase 2: warm-up inside the final window ---- */
     if(!idleSt.standby && idleSt.ready && remaining <= lead + 15){
       cmd(idle,'mute');
       cmd(idle,'setVolume',[0]);
@@ -1260,7 +1393,6 @@ async function preloadNext(){
       } else {
         idleSt.warmFails = (idleSt.warmFails||0)+1;
         if(idleSt.warmFails < 2){
-          // نعيد المحاولة على نفس الأغنية بدل ما نقلب الأغاني
           setStatus('التسخين تعثّر — بحاول مرة ثانية على نفس الأغنية');
         } else {
           decks[next.srcDeck].queueIndex = next.idx;
@@ -1283,7 +1415,7 @@ setInterval(()=>{
   if(transitioning) return;
   ['A','B'].forEach(d=>{
     const st = decks[d];
-    if(st.pausedUnexpectedly && !st.standby && !st.userPaused &&
+    if(st.source!=='file' && st.pausedUnexpectedly && !st.standby && !st.userPaused &&
        (st.rescueCount||0) < 3 && Date.now()-st.pausedUnexpectedly > 1200){
       st.rescueCount = (st.rescueCount||0)+1;
       st.pausedUnexpectedly = 0;
@@ -1321,10 +1453,10 @@ async function startTransition(fromDeck, lead){
   transitioning = true;
   setStatus('يبدأ الدمج 🎚️');
 
-  cmd(toDeck,'playVideo');
+  playDeck(toDeck);
   const started = await waitPlaying(toDeck, 3500);
   if(!started){
-    cmd(toDeck,'playVideo'); // one retry
+    playDeck(toDeck); // one retry
     const retry = await waitPlaying(toDeck, 3000);
     if(!retry){
       // SAFETY NET: abort — do NOT fade to a silent deck
@@ -1361,7 +1493,7 @@ async function onTrackEnded(d){
   // best case: the other deck is standing by — snap to it
   if(oSt.standby && oSt.ready){
     transitioning = true;
-    cmd(other,'playVideo');
+    playDeck(other);
     const started = await waitPlaying(other, 4000);
     if(started){
       oSt.standby=false; setStandbyUI(other,false); oSt.preloadedUrl=null;
@@ -1373,7 +1505,7 @@ async function onTrackEnded(d){
       fadeTo(other==='B' ? 100 : 0, 2);
       setStatus('Auto-Mix شغال ✨');
     } else {
-      setStatus('⚠️ اضغطي ▶ على الديك '+other+' — يوتيوب رفض التشغيل التلقائي');
+      setStatus('⚠️ اضغطي ▶ على الديك '+other+' — التشغيل التلقائي اترفض');
     }
     transitioning = false;
     renderQueues();
@@ -1383,25 +1515,299 @@ async function onTrackEnded(d){
   // fallback: play next directly in the same (now free) deck
   const next = pickNext(d);
   if(!next) { setStatus('القائمتين فاضيات'); return; }
+  const item = queues[next.srcDeck][next.idx];
   transitioning = true;
   setStatus('يشغّل الجاية ▶');
-  loadDeck(d, queues[next.srcDeck][next.idx].url, next.srcDeck===d ? next.idx : undefined);
-  if(next.srcDeck!==d){ decks[next.srcDeck].queueIndex = next.idx; }
-  const ready = await waitReady(d, 12000);
-  if(ready){
-    cmd(d,'playVideo');
-    const started = await waitPlaying(d, 4000);
-    if(!started){
-      setStatus('⚠️ اضغطي ▶ على الديك '+d+' — يوتيوب رفض التشغيل التلقائي');
-    } else {
-      setStatus('Auto-Mix شغال ✨');
-    }
+  let ok;
+  if(item.type==='file'){
+    ok = await loadFileDeck(d, item.trackId, {srcDeck:next.srcDeck,
+      queueIndex: next.srcDeck===d ? next.idx : undefined});
   } else {
-    setStatus('أغنية ما اشتغلت — جربي اللي بعدها يدوي');
+    ok = loadDeck(d, item.url, next.srcDeck===d ? next.idx : undefined);
+  }
+  if(next.srcDeck!==d){ decks[next.srcDeck].queueIndex = next.idx; }
+  if(ok){
+    const ready = await waitReady(d, 15000);
+    if(ready){
+      playDeck(d);
+      const started = await waitPlaying(d, 4000);
+      if(!started){
+        setStatus('⚠️ اضغطي ▶ على الديك '+d+' — التشغيل التلقائي اترفض');
+      } else {
+        setStatus('Auto-Mix شغال ✨');
+      }
+    } else {
+      setStatus('أغنية ما اشتغلت — جربي اللي بعدها يدوي');
+    }
   }
   transitioning = false;
   renderQueues();
 }
+
+/* ================= DJ SHIMY PRO: Local File Engine 💾 ================= */
+/* ملف محلي = صفر توقف، صفر إعلانات، صفر حساب — زي Serato وrekordbox */
+
+let AC = null;
+function audioCtx(){
+  if(!AC){ AC = new (window.AudioContext||window.webkitAudioContext)(); }
+  if(AC.state==='suspended'){ AC.resume().catch(()=>{}); }
+  return AC;
+}
+
+/* --- مخزن دائم للملفات (IndexedDB) --- */
+const DB_NAME='djshimy', DB_STORE='tracks';
+function idbOpen(){ return new Promise((res,rej)=>{
+  const r=indexedDB.open(DB_NAME,1);
+  r.onupgradeneeded=()=>{ r.result.createObjectStore(DB_STORE,{keyPath:'id'}); };
+  r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);
+});}
+async function idbPut(track){ const db=await idbOpen(); return new Promise((res,rej)=>{
+  const tx=db.transaction(DB_STORE,'readwrite'); tx.objectStore(DB_STORE).put(track);
+  tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error);
+});}
+async function idbGet(id){ const db=await idbOpen(); return new Promise((res,rej)=>{
+  const rq=db.transaction(DB_STORE).objectStore(DB_STORE).get(id);
+  rq.onsuccess=()=>res(rq.result); rq.onerror=()=>rej(rq.error);
+});}
+async function idbDel(id){ const db=await idbOpen(); return new Promise((res,rej)=>{
+  const tx=db.transaction(DB_STORE,'readwrite'); tx.objectStore(DB_STORE).delete(id);
+  tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error);
+});}
+try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persist(); } }catch(_){}
+
+/* --- Web Audio graph: source → EQ(low/mid/high) → filter → gain → speakers --- */
+function buildGraph(audioEl){
+  const ctx = audioCtx();
+  const src = ctx.createMediaElementSource(audioEl);
+  const low = ctx.createBiquadFilter(); low.type='lowshelf';  low.frequency.value=200;
+  const mid = ctx.createBiquadFilter(); mid.type='peaking';   mid.frequency.value=1000; mid.Q.value=1;
+  const high= ctx.createBiquadFilter(); high.type='highshelf';high.frequency.value=4000;
+  const filt= ctx.createBiquadFilter(); filt.type='peaking';  filt.gain.value=0;
+  const gain= ctx.createGain();
+  src.connect(low); low.connect(mid); mid.connect(high); high.connect(filt); filt.connect(gain);
+  gain.connect(ctx.destination);
+  return {src,low,mid,high,filt,gain};
+}
+
+function stopFileEngine(d){
+  const st = decks[d];
+  if(st.audio){
+    try{
+      st.audio.pause();
+      if(st.audio.src && st.audio.src.startsWith('blob:')) URL.revokeObjectURL(st.audio.src);
+      st.audio.src='';
+    }catch(_){}
+  }
+  st.audio=null; st.nodes=null; st.peaks=null; st.trackId=null;
+  const c = document.getElementById('wave'+d);
+  if(c) c.style.display='none';
+}
+
+/* --- unified deck controls (yt + file) --- */
+function playDeck(d){
+  const st = decks[d];
+  if(st.source==='file' && st.audio){
+    audioCtx();
+    const p = st.audio.play();
+    if(p && p.catch) p.catch(()=>{});
+  } else {
+    cmd(d,'playVideo');
+  }
+}
+function pauseDeck(d){
+  const st = decks[d];
+  if(st.source==='file' && st.audio){ st.audio.pause(); }
+  else cmd(d,'pauseVideo');
+}
+function seekDeckTo(d, t){
+  const st = decks[d];
+  if(st.source==='file' && st.audio){
+    try{ st.audio.currentTime = Math.max(0, t); st.current = st.audio.currentTime; }catch(_){}
+  } else {
+    cmd(d,'seekTo',[Math.max(0,t),true]);
+  }
+}
+
+/* --- تحميل ملف محلي في الديك --- */
+async function loadFileDeck(d, trackId, opts){
+  opts = opts || {};
+  let rec = null;
+  try{ rec = await idbGet(trackId); }catch(_){}
+  if(!rec || !rec.blob){ alert('الملف مو موجود بالمخزن — أضيفيه من جهازك من جديد 💾'); return false; }
+
+  const st = decks[d];
+  stopFileEngine(d);
+  if(st.listenTimer){ clearInterval(st.listenTimer); st.listenTimer=null; }
+  st.iframe = null;
+  st.source = 'file';
+  st.ready=false; st.playing=false; st.duration=0; st.current=0;
+  st.queueIndex = (typeof opts.queueIndex==='number') ? opts.queueIndex : null;
+  st.lastUrl = 'file:'+trackId;
+  st.trackId = trackId;
+  st.standby=false; st.preloadedUrl=null; st.srcDeck = opts.srcDeck || null;
+  st.userPaused=false; st.rescueCount=0; st.pausedUnexpectedly=0;
+  clearLoopState(d);
+  setStandbyUI(d,false);
+  setPlayUI(d,false);
+  setEqEnabled(d,true);
+
+  const wrap = document.getElementById('wrap'+d);
+  wrap.innerHTML='';
+  const ph = document.createElement('div');
+  ph.className='video-empty';
+  ph.textContent='💾 '+rec.name;
+  wrap.appendChild(ph);
+
+  document.getElementById('title'+d).textContent = rec.name.replace(/\.[^.]+$/,'');
+  document.getElementById('artist'+d).textContent = '💾 ملف محلي — بدون توقف وبدون إعلانات';
+
+  const a = new Audio();
+  a.preload='auto';
+  a.src = URL.createObjectURL(rec.blob);
+  st.audio = a;
+
+  a.addEventListener('loadedmetadata', ()=>{
+    st.duration = a.duration || 0;
+    st.ready = true;
+    updateProgress(d);
+  });
+  a.addEventListener('timeupdate', ()=>{
+    st.current = a.currentTime;
+    updateProgress(d);
+    drawWave(d);
+  });
+  a.addEventListener('play',  ()=>{ st.playing=true;  if(!st.standby) setPlayUI(d,true);  });
+  a.addEventListener('pause', ()=>{ st.playing=false; if(!st.standby) setPlayUI(d,false); });
+  a.addEventListener('ended', ()=>{ st.playing=false; setPlayUI(d,false); onTrackEnded(d); });
+
+  try{ st.nodes = buildGraph(a); }catch(_){ st.nodes = null; }
+  applyEQ(d);
+  applyVolumes();
+  makePeaks(d, rec.blob, trackId);
+  renderQueues();
+  return true;
+}
+
+/* --- الـ Waveform الحقيقي --- */
+async function makePeaks(d, blob, forTrack){
+  try{
+    const buf = await blob.arrayBuffer();
+    const ab = await audioCtx().decodeAudioData(buf);
+    if(decks[d].trackId !== forTrack) return; // اتبدلت الأغنية أثناء الفك
+    const ch = ab.getChannelData(0);
+    const N = 280, step = Math.max(1, Math.floor(ch.length/N));
+    const peaks = [];
+    for(let i=0;i<N;i++){
+      let m=0;
+      for(let j=0;j<step;j+=32){ const v=Math.abs(ch[i*step+j]||0); if(v>m)m=v; }
+      peaks.push(m);
+    }
+    decks[d].peaks = peaks;
+    drawWave(d);
+  }catch(_){ decks[d].peaks = null; }
+}
+function drawWave(d){
+  const st = decks[d];
+  const c = document.getElementById('wave'+d);
+  if(!c) return;
+  if(st.source!=='file' || !st.peaks){ c.style.display='none'; return; }
+  c.style.display='block';
+  const dpr = window.devicePixelRatio||1;
+  const W = c.clientWidth*dpr, H = c.clientHeight*dpr;
+  if(c.width!==W) c.width=W;
+  if(c.height!==H) c.height=H;
+  const g = c.getContext('2d');
+  g.clearRect(0,0,W,H);
+  const col = d==='A' ? '#ff2d95' : '#b4ff39';
+  const dim = d==='A' ? 'rgba(255,45,149,.25)' : 'rgba(180,255,57,.25)';
+  const N = st.peaks.length;
+  const bw = W/N;
+  const playedFrac = st.duration ? st.current/st.duration : 0;
+  for(let i=0;i<N;i++){
+    const h = Math.max(2*dpr, st.peaks[i]*H*0.92);
+    g.fillStyle = (i/N) <= playedFrac ? col : dim;
+    g.fillRect(i*bw+bw*0.15, (H-h)/2, bw*0.7, h);
+  }
+}
+/* الضغط على الـ waveform = تنقل داخل الأغنية */
+['A','B'].forEach(d=>{
+  const c = document.getElementById('wave'+d);
+  if(c) c.addEventListener('click', (ev)=>{
+    const st = decks[d];
+    if(st.source!=='file' || !st.duration) return;
+    const r = c.getBoundingClientRect();
+    seekDeckTo(d, ((ev.clientX-r.left)/r.width)*st.duration);
+  });
+});
+
+/* --- EQ + الفلتر الحقيقي --- */
+function applyEQ(d){
+  const st = decks[d];
+  if(st.source!=='file' || !st.nodes) return;
+  st.nodes.low.gain.value  = +document.getElementById('low'+d).value;
+  st.nodes.mid.gain.value  = +document.getElementById('mid'+d).value;
+  st.nodes.high.gain.value = +document.getElementById('high'+d).value;
+  const f = +document.getElementById('filt'+d).value;
+  const fl = st.nodes.filt;
+  if(f < -3){          // لو باص فلتر: يخنق الطبقات العالية تدريجياً
+    fl.type='lowpass';  fl.Q.value=1;
+    fl.frequency.value = 8000*Math.pow(200/8000, (-f-3)/97);
+  } else if(f > 3){    // هاي باص: يسحب الباص تدريجياً
+    fl.type='highpass'; fl.Q.value=1;
+    fl.frequency.value = 40*Math.pow(4000/40, (f-3)/97);
+  } else {             // النص = محايد
+    fl.type='peaking'; fl.gain.value=0;
+  }
+}
+function resetEQ(d){
+  ['low','mid','high','filt'].forEach(k=>{ document.getElementById(k+d).value=0; });
+  applyEQ(d);
+}
+function setEqEnabled(d,on){
+  const row = document.getElementById('eqRow'+d);
+  if(row) row.classList.toggle('off', !on);
+}
+
+/* --- إضافة ملفات من الجهاز --- */
+function ensureMyFilesLib(){
+  let idx = library.files.findIndex(f=>f.name==='💾 ملفاتي');
+  if(idx===-1){
+    library.files.push({name:'💾 ملفاتي', songs:[]});
+    idx = library.files.length-1;
+  }
+  return idx;
+}
+async function addFilesToLibrary(fileList, targetIdx){
+  const files = Array.from(fileList||[]);
+  if(!files.length) return [];
+  const idx = (typeof targetIdx==='number') ? targetIdx :
+              (library.openIdx!==null ? library.openIdx : ensureMyFilesLib());
+  const added = [];
+  for(const f of files){
+    const id = 'trk_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
+    try{
+      await idbPut({id:id, name:f.name, blob:f});
+      const item = {type:'file', trackId:id, title:'💾 '+f.name.replace(/\.[^.]+$/,'')};
+      library.files[idx].songs.push(item);
+      added.push(item);
+    }catch(e){
+      alert('ما قدرت أحفظ «'+f.name+'» — يمكن مساحة المتصفح امتلأت');
+      break;
+    }
+  }
+  saveLibrary();
+  renderLibrary();
+  return added;
+}
+async function deckFilePicked(d, input){
+  const files = input.files;
+  if(!files || !files.length) return;
+  const idx = ensureMyFilesLib();
+  const added = await addFilesToLibrary(files, idx);
+  input.value='';
+  if(added.length){ loadFileDeck(d, added[0].trackId); }
+}
+/* ================= نهاية محرك الملفات المحلية ================= */
 
 renderQueues();
 renderLibrary();
