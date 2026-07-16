@@ -585,7 +585,7 @@
   <b>⚡ الستتر:</b> اضغطي ورا بعض بإيقاعك = تأتأة الديجيز.
   <b>🔄 الإنعاش:</b> ديك علّق؟ اضغطيه — يعيد هذا الديك بس ويرجع لمكانه.
   <b>📚 المكتبة:</b> جهّزي ملف كل مناسبة قبلها بأيام وأنتي مرتاحة، ويوم الحفلة كل شي بضغطة.
-  <b>⭐ المشغّلات مفصولة عن حسابك:</b> الديكات تشتغل بوضع خاص ما يرتبط بحساب يوتيوب حقك — يعني ما فيه "used on another device" ولا توقف مفاجئ بسبب الحساب. لو أغنية معينة رفضت تشتغل (أصحابها مانعين التضمين)، جرّبي نسخة Audio أو Lyrics منها.
+  <b>⭐ حارس التشغيل:</b> المشغّلات مربوطة بحسابك (بريميومك شغال = بدون إعلانات)، ولو المتصفح أو يوتيوب وقّف أغنية فجأة لأي سبب، الميكسر يرجّعها تلقائياً خلال ثانية من نفس المكان. ملاحظة صغيرة: لا توقفين الأغنية بالضغط على الفيديو نفسه — استخدمي زر «إيقاف» حقنا، لأن الحارس يعتبر ضغطة الفيديو توقف مفاجئ ويرجّع الأغنية.
 </p>
 
 <script>
@@ -634,9 +634,7 @@ function loadDeck(d, directUrl, queueIndex, opts){
   wrap.innerHTML = '';
   const f = document.createElement('iframe');
   f.allow = 'autoplay; encrypted-media';
-  // youtube-nocookie: يفصل المشغّل عن حساب يوتيوب حقك تماماً —
-  // ما فيه "used on another device" ولا توقف مفاجئ بسبب الحساب
-  f.src = 'https://www.youtube-nocookie.com/embed/'+id+'?enablejsapi=1&playsinline=1&controls=0&rel=0&modestbranding=1';
+  f.src = 'https://www.youtube.com/embed/'+id+'?enablejsapi=1&playsinline=1&controls=0&rel=0&modestbranding=1';
   wrap.appendChild(f);
   st.iframe = f;
 
@@ -1278,21 +1276,23 @@ async function preloadNext(){
 }
 setInterval(preloadNext, 2000);
 
-/* --- rescue monitor: if YouTube force-pauses the live track, bring it back --- */
+/* --- rescue monitor: if YouTube/browser force-pauses a track, bring it back ---
+   شغال دايماً (مو بس مع الأوتو مكس) — أي أغنية توقف بدون ما توقفينها
+   أنتي، ترجع تشتغل من نفس المكان تلقائياً */
 setInterval(()=>{
-  if(!automix || transitioning) return;
+  if(transitioning) return;
   ['A','B'].forEach(d=>{
     const st = decks[d];
     if(st.pausedUnexpectedly && !st.standby && !st.userPaused &&
-       (st.rescueCount||0) < 2 && Date.now()-st.pausedUnexpectedly > 1500){
+       (st.rescueCount||0) < 3 && Date.now()-st.pausedUnexpectedly > 1200){
       st.rescueCount = (st.rescueCount||0)+1;
       st.pausedUnexpectedly = 0;
       applyVolumes();
       cmd(d,'playVideo');
-      setStatus('يوتيوب وقّف الأغنية — رجّعتها لك ▶');
+      setStatus('الأغنية توقفت فجأة — رجّعتها لك ▶');
     }
   });
-}, 1000);
+}, 700);
 
 /* --- transition watcher --- */
 setInterval(()=>{
